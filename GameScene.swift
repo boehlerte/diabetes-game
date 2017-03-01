@@ -3,12 +3,14 @@ import SpriteKit
 class GameScene: SKScene {
     
     let player = SKSpriteNode(imageNamed: "dot")
+    var touched:Bool = false
+    var location = CGPoint(x: 0, y: 0)
     
     override func didMove(to view: SKView) {
         backgroundColor = SKColor.cyan
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
         addChild(player)
-        
+       
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
@@ -18,6 +20,39 @@ class GameScene: SKScene {
         
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+        touched = true
+        for touch in touches {
+            location = touch.location(in: self)
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?){
+        for touch in touches {
+            location = touch.location(in: self)
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
+        touched = false
+    }
+    
+    override func update(_ currentTime: CFTimeInterval) {
+        if(touched) {
+            moveNodeToLocation()
+        }
+    }
+    
+    func moveNodeToLocation() {
+        let speed: CGFloat = 0.25
+        
+        var dx = location.x - player.position.x
+        var dy = location.y - player.position.y
+        
+        dx = dx * speed
+        dy = dy * speed
+        player.position = CGPoint(x: player.position.x+dx, y: player.position.y + dy)
+    }
     
     
     func random() -> CGFloat {
