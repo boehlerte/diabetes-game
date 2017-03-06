@@ -1,6 +1,11 @@
 import SpriteKit
 
+
+
 class GameScene: SKScene {
+    
+    var collection = [Foods]()
+
     
     let player = SKSpriteNode(imageNamed: "dot")
     var touched:Bool = false
@@ -10,11 +15,14 @@ class GameScene: SKScene {
         backgroundColor = SKColor.cyan
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
         addChild(player)
-       
+        
+        NewFood()
+        // create all the foods and put them in an array
+        
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
-                SKAction.wait(forDuration: 1.0)
+                SKAction.wait(forDuration: 4.0)
                 ])
         ))
         
@@ -52,8 +60,10 @@ class GameScene: SKScene {
         dx = dx * speed
         dy = dy * speed
         player.position = CGPoint(x: player.position.x+dx, y: player.position.y + dy)
+        
     }
     
+
     
     func random() -> CGFloat {
         return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
@@ -65,7 +75,14 @@ class GameScene: SKScene {
     
     func addFood() {
         
-        let apple = SKSpriteNode(imageNamed: "apple")
+        
+      //  let apple = SKSpriteNode(imageNamed: "apple")
+        
+        //////
+        let randd = Int(arc4random_uniform(3))
+        // random number casted as int
+        let apple = collection[randd].foodType
+        //////
         
         // Determine where to spawn the food along the Y axis
         let actualY = random(min: apple.size.height/2, max: size.height - apple.size.height/2)
@@ -83,4 +100,30 @@ class GameScene: SKScene {
         apple.run(SKAction.sequence([actionMove, actionMoveDone]))
         
     }
+    
+    
+    
+    func NewFood() {
+        
+        let Bread = SKSpriteNode(imageNamed: "Foods.sprite/Bread.png")
+        let f1 = Foods(carb_count: 5, carb: true, foodType: Bread)
+        collection.append(f1)
+        
+        let Banana = SKSpriteNode(imageNamed: "Foods.sprite/Banana.png")
+        let f2 = Foods(carb_count: 5, carb: true, foodType: Banana)
+        collection.append(f2)
+        
+        let Pizza = SKSpriteNode(imageNamed: "Foods.sprite/Pizza.png")
+        let f3 = Foods(carb_count: 5, carb: true, foodType: Pizza)
+        collection.append(f3)
+        
+        let Strawberry = SKSpriteNode(imageNamed: "Foods.sprite/Strawberry.png")
+        let f4 = Foods(carb_count: 5, carb: true, foodType: Strawberry)
+        collection.append(f4)
+        
+        
+        
+        
+    }
+    
 }
