@@ -16,11 +16,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     var playerTouched:Bool = false
     var playerLocation = CGPoint(x: 0, y: 0)
     
+   // use this for sound effects, then call playSound(sound: sound) in DidMove
+   // var sound = SKAction.playSoundFileNamed("sound.wav", waitForCompletion: false)
+    
     override func didMove(to view: SKView) {
+        
+        let backgroundMusic = SKAudioNode(fileNamed: "BackgroundMusic.wav")
+        self.addChild(backgroundMusic)
         
         physicsWorld.contactDelegate = self
         
-        backgroundColor = SKColor.white
+        backgroundColor = SKColor.cyan
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.25)
         
         player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width/2)
@@ -35,6 +41,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         NewFood()
         // create all the foods and put them in an array
         
+       
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
@@ -151,8 +158,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             contact.bodyB.node?.removeFromParent()
         }
         
-        
     }
     
-    
+    // CALL THIS TO PLAY MUSIC/SOUND
+    func playSound(sound : SKAction) {
+        run(sound)
+    }
+
 }
