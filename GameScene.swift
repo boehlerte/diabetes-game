@@ -21,7 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     
     var streak = 0
-    var foodMeter = SKSpriteNode(color: SKColor .yellow, size: CGSize(width: 0, height: 50))
+    var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
     
     
     override func didMove(to view: SKView) {
