@@ -1,4 +1,3 @@
-
 import SpriteKit
 import UIKit
 
@@ -16,12 +15,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var playerTouched:Bool = false
     var playerLocation = CGPoint(x: 0, y: 0)
-      // make sound effects here, then call playSound(sound: soundname) to play them
+    // make sound effects here, then call playSound(sound: soundname) to play them
     var good_carb = SKAction.playSoundFileNamed("GameSounds/good_carb.wav", waitForCompletion: false)
     var bad_carb = SKAction.playSoundFileNamed("GameSounds/bad_carb.wav", waitForCompletion: false)
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
-=======
+
     // use this for sound effects, then call playSound(sound: sound) in DidMove
     // var sound = SKAction.playSoundFileNamed("sound.wav", waitForCompletion: false)
     
@@ -36,9 +35,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         
         physicsWorld.contactDelegate = self
         
-       backgroundColor = SKColor.cyan
-    
-
+        backgroundColor = SKColor.cyan
+        
+        
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.25)
         
         player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width/2)
@@ -53,7 +52,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         NewFood()
         // create all the foods and put them in an array
         
-       
+        
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
@@ -61,6 +60,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 ])
         ))
         
+            //clear out section at top of screen for meter
+                let meterFrame = SKShapeNode(rectOf: CGSize(width: size.width * 2, height: 100))
+                    meterFrame.fillColor = SKColor .white
+                    meterFrame.position = CGPoint(x: size.width, y: 50)
+                    addChild(meterFrame)
+            
+                    //add fill of meter as food is collected
+                
+                    foodMeter.name = "meter"
+                    foodMeter.position = CGPoint(x: 0 , y: 50)
+                    foodMeter.anchorPoint = CGPoint(x: 0.0, y: 0.5)
+                    		
+                    addChild(foodMeter)
         
     }
     
@@ -120,7 +132,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         let food = collection[randd].foodType.copy() as! SKSpriteNode
         
         // Determine where to spawn the food along the Y axis
-        let actualY = random(min: food.size.height/2, max: (size.height - food.size.height/2)/2)
+        let actualY = random(min: food.size.height/2 + 100, max: (size.height - food.size.height/2))
         
         food.position = CGPoint(x: size.width + food.size.width/2, y: actualY)
         food.physicsBody = SKPhysicsBody(circleOfRadius: food.size.width/2)
@@ -222,5 +234,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     func playSound(sound : SKAction) {
         run(sound)
     }
-
+    
 }
+//}
