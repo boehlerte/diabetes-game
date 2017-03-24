@@ -16,12 +16,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     var playerTouched:Bool = false
     var playerLocation = CGPoint(x: 0, y: 0)
-    
-    // make sound effects here, then call playSound(sound: soundname) to play them
+      // make sound effects here, then call playSound(sound: soundname) to play them
     var good_carb = SKAction.playSoundFileNamed("GameSounds/good_carb.wav", waitForCompletion: false)
     var bad_carb = SKAction.playSoundFileNamed("GameSounds/bad_carb.wav", waitForCompletion: false)
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
+=======
+    // use this for sound effects, then call playSound(sound: sound) in DidMove
+    // var sound = SKAction.playSoundFileNamed("sound.wav", waitForCompletion: false)
+    
+    
+    var streak = 0
+    var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
     
     override func didMove(to view: SKView) {
         
