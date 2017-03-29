@@ -1,5 +1,4 @@
 import SpriteKit
-import UIKit
 
 enum object:UInt32{
     case food = 1
@@ -8,10 +7,15 @@ enum object:UInt32{
 
 class GameScene: SKScene, SKPhysicsContactDelegate{
     
+   
+    
     var collection = [Foods]()
-    // create array for all food items
     
     let player = SKSpriteNode(imageNamed: "ram")
+    
+    let welcomeScreen = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 500, height: 500))
+    let welcomeText = SKLabelNode(fontNamed: "Chalkduster")
+    
     let pauseScreen = SKLabelNode(fontNamed: "Chalkduster")
     
     var playerTouched:Bool = false
@@ -23,10 +27,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
+    
     var streak = 0
     var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
     
+    
     override func didMove(to view: SKView) {
+        
         
         let backgroundMusic = SKAudioNode(fileNamed: "BackgroundMusic.wav")
         self.addChild(backgroundMusic)
@@ -34,8 +41,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         physicsWorld.contactDelegate = self
         
         backgroundColor = SKColor.cyan
-        
-        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.25)
+        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
         
         player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width/2)
         player.physicsBody?.affectedByGravity = false
@@ -49,7 +55,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         NewFood()
         // create all the foods and put them in an array
         
-        
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
@@ -57,38 +62,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 ])
         ))
         
-            //clear out section at top of screen for meter
-            let meterFrame = SKShapeNode(rectOf: CGSize(width: size.width * 2, height: 100))
-            meterFrame.fillColor = SKColor .white
-            meterFrame.position = CGPoint(x: size.width, y: 50)
-            addChild(meterFrame)
-            
-            //add fill of meter as food is collected
-            foodMeter.name = "meter"
-            meterFrame.physicsBody = SKPhysicsBody(edgeFrom: CGPoint(x:0, y:100), to: CGPoint(x:size.width, y: 100))
-            foodMeter.position = CGPoint(x: 0 , y: 50)
-            foodMeter.anchorPoint = CGPoint(x: 0.0, y: 0.5)
-            addChild(foodMeter)
+        //clear out section at top of screen for meter
+        let meterFrame = SKSpriteNode(color: SKColor .white, size: CGSize(width: size.width * 2, height: 100))
+        meterFrame.position = CGPoint(x: size.width, y: 50)
+        addChild(meterFrame)
         
+        //add fill of meter as food is collected
+        foodMeter.name = "meter"
+        meterFrame.physicsBody = SKPhysicsBody(edgeFrom: CGPoint(x:0, y:100), to: CGPoint(x:
+            size.width, y: 100))
+        foodMeter.position = CGPoint(x: 0 , y: 50)
+        foodMeter.anchorPoint = CGPoint(x: 0.0, y: 0.5)
+        
+        addChild(foodMeter)
         
         pauseScreen.text = "PAUSED"
         pauseScreen.fontSize = 150
         pauseScreen.fontColor = SKColor.black
         pauseScreen.position = CGPoint(x: frame.midX, y: frame.midY)
+        pauseScreen.zPosition = 1.0
         
-
+        
     }
-    
-    
     
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         playerTouched = true
         
-        // play game when player puts down finger
+        //play game when player puts down finger
         view?.scene?.isPaused = false
+        welcomeScreen.removeFromParent()
+        welcomeText.removeFromParent()
         pauseScreen.removeFromParent()
+        
         for touch in touches {
             playerLocation = touch.location(in: self)
         }
@@ -103,10 +110,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
         playerTouched = false
         
-        // pause game when player lifts finger
+        //pause game when player lifts finger
         view?.scene?.isPaused = true
-            addChild(pauseScreen)
-
+        addChild(pauseScreen)
     }
     
     override func update(_ currentTime: CFTimeInterval) {
@@ -139,12 +145,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     
     func addFood() {
         
-        let randd = Int(arc4random_uniform(27))
-        // random number casted as int to pick food to show next
-        let food = collection[randd].foodType.copy() as! SKSpriteNode
+        
+        
+        let randd = Int(arc4random_uniform(4))
+        // random number casted as int to pick food to show
+        let food = collection[randd].node.copy() as! SKSpriteNode
+     
         
         // Determine where to spawn the food along the Y axis
-        let actualY = random(min: food.size.height/2 + 100, max: (size.height - food.size.height/2))
+        let actualY = random(min: food.size.height/2 + 100, max: size.height - food.size.height/2)
         
         food.position = CGPoint(x: size.width + food.size.width/2, y: actualY)
         food.physicsBody = SKPhysicsBody(circleOfRadius: food.size.width/2)
@@ -165,133 +174,90 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         food.run(SKAction.sequence([actionMove, actionMoveDone]))
         
     }
-    
+
     //CREATE NEW FOODS FOR GAME
+    
     func NewFood() {
         
-        let Bread = SKSpriteNode(imageNamed: "Foods.sprite/Bread.png")
-        let f1 = Foods(carb_count: 5, carb: true, foodType: Bread)
-        collection.append(f1)
+
+        let pizzaNode = SKSpriteNode(imageNamed: "Foods.sprite/pizza.png")
+        let pizza = Foods(node: pizzaNode, carb_count: 30, carb: true)
+        collection.append(pizza)
         
-        let Banana = SKSpriteNode(imageNamed: "Foods.sprite/Banana.png")
-        let f2 = Foods(carb_count: 5, carb: true, foodType: Banana)
-        collection.append(f2)
+        let appleNode = SKSpriteNode(imageNamed: "Foods.sprite/apple.png")
+        let apple = Foods(node: appleNode, carb_count: 15, carb: true)
+        collection.append(apple)
         
-        let Pizza = SKSpriteNode(imageNamed: "Foods.sprite/Pizza.png")
-        let f3 = Foods(carb_count: 5, carb: true, foodType: Pizza)
-        collection.append(f3)
+        let burgerNode = SKSpriteNode(imageNamed: "Foods.sprite/burger.png")
+        let burger = Foods(node: burgerNode, carb_count: 30, carb: true)
+        collection.append(burger)
         
-        let Strawberry = SKSpriteNode(imageNamed: "Foods.sprite/Strawberry.png")
-        let f4 = Foods(carb_count: 5, carb: true, foodType: Strawberry)
-        collection.append(f4)
-        
-        let apple = SKSpriteNode(imageNamed: "Foods.sprite/apple.png")
-        let f5 = Foods(carb_count: 15, carb: true, foodType: apple)
-        collection.append(f5)
-        let banana = SKSpriteNode(imageNamed: "Foods.sprite/banana.png")
-        let f6 = Foods(carb_count: 15, carb: true, foodType: banana)
-        collection.append(f6)
-        let burger = SKSpriteNode(imageNamed: "Foods.sprite/burger.png")
-        let f7 = Foods(carb_count: 30, carb: true, foodType: burger)
-        collection.append(f7)
-        let cookie = SKSpriteNode(imageNamed: "Foods.sprite/cookie.png")
-        let f8 = Foods(carb_count: 9, carb: true, foodType: cookie)
-        collection.append(f8)
-        let donut = SKSpriteNode(imageNamed: "Foods.sprite/donut.png")
-        let f9 = Foods(carb_count: 22, carb: true, foodType: donut)
-        collection.append(f9)
-        let fries = SKSpriteNode(imageNamed: "Foods.sprite/fries.png")
-        let f10 = Foods(carb_count: 45, carb: true, foodType: fries)
-        collection.append(f10)
-        let grapes = SKSpriteNode(imageNamed: "Foods.sprite/grapes.png")
-        let f11 = Foods(carb_count: 15, carb: true, foodType: grapes)
-        collection.append(f11)
-        let hotdog = SKSpriteNode(imageNamed: "Foods.sprite/hotdog.png")
-        let f12 = Foods(carb_count: 21, carb: true, foodType: hotdog)
-        collection.append(f12)
-        let ice_cream = SKSpriteNode(imageNamed: "Foods.sprite/ice_cream.png")
-        let f13 = Foods(carb_count: 23, carb: true, foodType: ice_cream)
-        collection.append(f13)
-        let mango = SKSpriteNode(imageNamed: "Foods.sprite/mango.png")
-        let f14 = Foods(carb_count: 50, carb: true, foodType: mango)
-        collection.append(f14)
-        let peach = SKSpriteNode(imageNamed: "Foods.sprite/peach.png")
-        let f15 = Foods(carb_count: 14, carb: true, foodType: peach)
-        collection.append(f15)
-        let pizza = SKSpriteNode(imageNamed: "Foods.sprite/pizza.png")
-        let f16 = Foods(carb_count: 30, carb: true, foodType: pizza)
-        collection.append(f16)
-        let bacon = SKSpriteNode(imageNamed: "Foods.sprite/bacon.png")
-        let f17 = Foods(carb_count: 0, carb: false, foodType: bacon)
-        collection.append(f17)
-        let broccoli = SKSpriteNode(imageNamed: "Foods.sprite/broccoli.png")
-        let f18 = Foods(carb_count: 0, carb: false, foodType: broccoli)
-        collection.append(f18)
-        let carrot = SKSpriteNode(imageNamed: "Foods.sprite/carrot.png")
-        let f19 = Foods(carb_count: 0, carb: false, foodType: carrot)
-        collection.append(f19)
-        let celery = SKSpriteNode(imageNamed: "Foods.sprite/celery.png")
-        let f20 = Foods(carb_count: 0, carb: false, foodType: celery)
-        collection.append(f20)
-        let chicken = SKSpriteNode(imageNamed: "Foods.sprite/chicken.png")
-        let f21 = Foods(carb_count: 0, carb: false, foodType: chicken)
-        collection.append(f21)
-        let fish = SKSpriteNode(imageNamed: "Foods.sprite/fish.png")
-        let f22 = Foods(carb_count: 0, carb: false, foodType: fish)
-        collection.append(f22)
-        let mushroom = SKSpriteNode(imageNamed: "Foods.sprite/mushroom.png")
-        let f23 = Foods(carb_count: 0, carb: false, foodType: mushroom)
-        collection.append(f23)
-        let olive_oil = SKSpriteNode(imageNamed: "Foods.sprite/olive_oil.png")
-        let f24 = Foods(carb_count: 0, carb: false, foodType: olive_oil)
-        collection.append(f24)
-        let pork = SKSpriteNode(imageNamed: "Foods.sprite/pork.png")
-        let f25 = Foods(carb_count: 0, carb: false, foodType: pork)
-        collection.append(f25)
-        let spinach = SKSpriteNode(imageNamed: "Foods.sprite/spinach.png")
-        let f26 = Foods(carb_count: 0, carb: false, foodType: spinach)
-        collection.append(f26)
-        let steak = SKSpriteNode(imageNamed: "Foods.sprite/steak.png")
-        let f27 = Foods(carb_count: 0, carb: false, foodType: steak)
-        collection.append(f27)
-        let water = SKSpriteNode(imageNamed: "Foods.sprite/water.png")
-        let f28 = Foods(carb_count: 0, carb: false, foodType: water)
-        collection.append(f28)
-        
-        
+        let broccoliNode = SKSpriteNode(imageNamed: "Foods.sprite/broccoli.png")
+        let broccoli = Foods(node: broccoliNode, carb_count: 0, carb: false)
+        collection.append(broccoli)
         
         
         
     }
     
-    // COLLISION DETECTION
+    //COLLISION DETECTION
+    
     func didBegin(_ contact: SKPhysicsContact) {
         
-        playSound(sound: good_carb)
-        // add conditions to change sounds based on food
-        
-        if(contact.bodyA.node?.name == "food"){
+        if (contact.bodyA.node?.name == "food") {
+            if let node = contact.bodyA.node as? SKSpriteNode {
+                for food in collection {
+                    if food.node.texture == node.texture {
+                        if(!food.carb){
+                            incrementMeter()
+                        }
+                    }
+                }
+            }
             contact.bodyA.node?.removeFromParent()
-            streak+=1
-            incrementMeter()
+            if(streak == 10){
+                endRound()
+            }
+            
+
         }else if(contact.bodyB.node?.name == "food"){
+            if let node = contact.bodyB.node as? SKSpriteNode {
+                for food in collection {
+                    if food.node.texture == node.texture {
+                        if(!food.carb){
+                            incrementMeter()
+                            print("incremented meter")
+                        }
+                    }
+                }}
             contact.bodyB.node?.removeFromParent()
-            streak+=1
-            incrementMeter()
+    
+            if(streak == 10){
+                endRound()
+            }
         }
         
         
-        
     }
     
-    // CALL THIS TO PLAY MUSIC/SOUND
     func playSound(sound : SKAction) {
         run(sound)
     }
     
+    
+    //increment meter by number of carbs
     func incrementMeter(){
-    foodMeter.size = CGSize(width:foodMeter.size.width+30, height:foodMeter.size.height)
+        foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / 10), height: foodMeter.size.height)
     }
     
+    func endRound(){
+        view?.scene?.isPaused = true
+        
+    }
+   
+        
 }
-//}
+
+
+
+
