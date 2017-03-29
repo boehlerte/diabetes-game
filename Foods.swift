@@ -1,10 +1,3 @@
-//
-//  Foods.swift
-//  SpriteKitGame
-//
-//  Created by Diane Pozefsky on 3/28/17.
-//  Copyright © 2017 Erin Boehlert. All rights reserved.
-//
 
 import Foundation
 import SpriteKit
