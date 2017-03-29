@@ -2,43 +2,29 @@
 //  Foods.swift
 //  SpriteKitGame
 //
-//  Created by Marina Kashgarian on 3/1/17.
-//  Copyright © 2017 Marina Kashgarian. All rights reserved.
+//  Created by Diane Pozefsky on 3/28/17.
+//  Copyright © 2017 Erin Boehlert. All rights reserved.
 //
 
 import Foundation
 import SpriteKit
 
-
-class Foods {
+class Foods{
     
-//    var collection = [Foods]()
-    
-    var carb_count: Int
-    // save number of carbs
-    
+    //    var collection = [Foods]()
+    var node: SKSpriteNode
+    var carb_count :Int
     var carb: Bool
-    // save whether or not this is a carb
     
-    var foodType: SKSpriteNode
-    // save what kind of food it is (matches with sprite?)
-    
-    var sprite: SKSpriteNode?
-    
-    init(carb_count: Int, carb: Bool, foodType: SKSpriteNode) {
+    init(node: SKSpriteNode, carb_count: Int, carb: Bool){
+        self.node = node
         self.carb_count = carb_count
         self.carb = carb
-        self.foodType = foodType
-    
-            
-    
-        
     }
+   
     
     
-    // to print something useful
-    var description: String {
-        return "type:\(foodType) carb count:\(carb_count) carb or no?:\(carb)"
-    }
+    
+    
+    
 }
-
