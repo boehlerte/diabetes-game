@@ -147,7 +147,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         
         
         
-        let randd = Int(arc4random_uniform(4))
+        let randd = Int(arc4random_uniform(24))
         // random number casted as int to pick food to show
         let food = collection[randd].node.copy() as! SKSpriteNode
      
