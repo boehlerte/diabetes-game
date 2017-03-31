@@ -16,11 +16,24 @@ class GameViewController: UIViewController {
         scene.scaleMode = .resizeFill
         skView.presentScene(scene)
     
+        
+        let soundSwitch=UISwitch();
+        soundSwitch.isOn = true
+        soundSwitch.setOn(true, animated: false);
+//        switchDemo.addTarget(self, action: "switchValueDidChange:", for: .valueChanged);
+        self.view?.addSubview(soundSwitch);
+        
+//        if(soundSwitch) {
+//            
+//        }
+
     }
  
     override var prefersStatusBarHidden: Bool {
         return true
     }
+    
+    
     
 
 }
