@@ -14,7 +14,11 @@ class MenuScene: SKScene {
     let title = SKLabelNode(fontNamed: "Chalkduster")
     
     let playButton = SKLabelNode(fontNamed: "Chalkduster")
-    
+    let l2 = SKLabelNode(fontNamed: "Chalkduster")
+    let l3 = SKLabelNode(fontNamed: "Chalkduster")
+    let info = SKLabelNode(fontNamed: "Chalkduster")
+    let music = SKLabelNode(fontNamed: "Chalkduster")
+
     
     override init(size: CGSize) {
         super.init(size: size)
@@ -22,16 +26,43 @@ class MenuScene: SKScene {
         backgroundColor = SKColor.blue
         
         playButton.fontColor = SKColor.white
-        playButton.text = "PLAY!"
-        playButton.fontSize = 100
-        playButton.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        playButton.text = "Level 1"
+        playButton.fontSize = 50
+        playButton.position = CGPoint(x: size.width / 2, y: size.height * 0.5)
         addChild(playButton)
         
-        title.text = "*WORKING TITLE: DIABETES*"
+        l2.fontColor = SKColor.white
+        l2.text = "Level 2"
+        l2.fontSize = 50
+        l2.position = CGPoint(x: size.width / 2, y: size.height * 0.35)
+        addChild(l2)
+        
+        l3.fontColor = SKColor.white
+        l3.text = "Level 3"
+        l3.fontSize = 50
+        l3.position = CGPoint(x: size.width / 2, y: size.height * 0.2)
+        addChild(l3)
+        
+        info.fontColor = SKColor.white
+        info.text = "Info Tab"
+        info.fontSize = 50
+        info.position = CGPoint(x: size.width / 2, y: size.height * 0.05)
+        addChild(info)
+        
+        music.fontColor = SKColor.white
+        music.text = "Music On/Off"
+        music.fontSize = 20
+        music.position = CGPoint(x: size.width * 0.13, y: size.height * 0.98)
+        addChild(music)
+        
+        
+        title.text = "CHEF RAMESES"
         title.fontColor = SKColor.white
-        title.fontSize = 50
+        title.fontSize = 70
         title.position = CGPoint(x: size.width / 2, y: size.height * 0.65)
         addChild(title)
+        
+    
 
         
     }
