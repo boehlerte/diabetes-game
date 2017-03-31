@@ -26,7 +26,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     var good_carb = SKAction.playSoundFileNamed("GameSounds/good_carb.wav", waitForCompletion: false)
     var bad_carb = SKAction.playSoundFileNamed("GameSounds/bad_carb.wav", waitForCompletion: false)
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
-    var level_complete = SKAction.playSoundFileNamed("level_complete.wav", waitForCompletion: false)
+    var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
     //streak setting for Level 1
     //round 1 streak of 10
@@ -370,6 +370,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         view?.scene?.isPaused = true
         player.removeFromParent()
         addChild(successScreen)
+        playSound(sound: level_complete)
     }
    
         
