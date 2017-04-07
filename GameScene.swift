@@ -21,6 +21,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     //pause when touch contact ends
     let pauseScreen = SKLabelNode(fontNamed: "Chalkduster")
     
+    let scoreBar = SKLabelNode(fontNamed: "Marker Felt")
+    let streakStar = SKSpriteNode(imageNamed: "star")
+    let streakValue = SKLabelNode(fontNamed: "Marker Felt")
+    
     
     // make sound effects here, then call playSound(sound: soundname) to play them
     var good_carb = SKAction.playSoundFileNamed("GameSounds/good_carb.wav", waitForCompletion: false)
@@ -35,9 +39,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     //round 4 streak of 20 + speed up food icons
     //round 5 streak of 20 + speed up food icons and decrease ratio of non-carb to carb items
     var streak = 0
+    var itemsCollected = 0
+    var score = 0
     
     //meter to keep track of streak
-   var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
+    var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
     
     
     override func didMove(to view: SKView) {
@@ -103,6 +109,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         levelOneScreen.run(
             SKAction.fadeOut(withDuration: 0.5)
         )
+        
+        scoreBar.text = "SCORE: \(score)"
+        scoreBar.fontSize = 30
+        scoreBar.fontColor = SKColor.blue
+        scoreBar.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
+        scoreBar.zPosition = 1.0
+        addChild(scoreBar)
+        
+        streakStar.position = CGPoint(x: size.width * 0.80, y: size.height * 0.96)
+        streakStar.zPosition = 1.0
+        addChild(streakStar)
+        
+        streakValue.text = "\(streak)"
+        streakValue.fontSize = 30
+        streakValue.position = CGPoint(x: size.width * 0.77, y: size.height * 0.95)
+        streakValue.zPosition = 1.0
+        addChild(streakValue)
         
     }
     
@@ -174,7 +197,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
     }
     
     func addFood() {
-       
+        
+        
+        
         let randd = Int(arc4random_uniform(22))
         // random number casted as int to pick food to show
         let food = collection[randd].node.copy() as! SKSpriteNode
@@ -327,6 +352,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                 if(!food.carb){
                     playSound(sound: good_carb)
                     streak += 1
+                    itemsCollected += 1
+                    streakValue.text = "\(streak)"
+                    
+                    //emphasize star on streak increase
+                    let scaleUp = SKAction.scale(to: 1.5, duration: 0.5)
+                    let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
+                    let sequence = SKAction.sequence([scaleUp, scaleDown])
+                    streakStar.run(sequence)
+                    
+                    score += (100 * streak)
+                    scoreBar.text = "SCORE: \(score)"
                     incrementMeter()
                 }else{
                     playSound(sound: bad_carb)
@@ -338,12 +374,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
                         SKAction.fadeOut(withDuration: 0.5)
                     )
                     streak = 0
-                    resetMeter()
+                    streakValue.text = "\(streak)"
+                    score -= 20
+                    scoreBar.text = "SCORE: \(score)"
                 }
             }
         }
         
-        if(streak == 5){
+        if(itemsCollected == 5){
             endRound()
         }
 
