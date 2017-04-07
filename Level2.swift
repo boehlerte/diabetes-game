@@ -370,7 +370,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 }else{
                     playSound(sound: bad_carb)
                     count += food.carb_count
-                    if(count>50 && count<=100 && !round1) {
+                    if(count>100 && count<=200 && !round1) {
                         round1 = true
                         print("Count: \(count)")
                         backgrounds.removeFromParent()
@@ -381,14 +381,15 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         background.zPosition = -1
                         addChild(background)
                     }
-//                    if(count>150) {
-//                        backgrounds.removeFromParent()
-//                        let background = SKSpriteNode(imageNamed: "background_night.png")
-//                        background.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-//                        background.setScale(1.22)
-//                        background.zPosition = -1
-//                        addChild(background)
-//                    }
+                    if(count>200 && !round2) {
+                        round2 = true
+                        background.removeFromParent()
+                        let backgrounds = SKSpriteNode(imageNamed: "background_night.png")
+                        backgrounds.position = CGPoint(x: size.width/2, y: size.height * 0.55)
+                        backgrounds.setScale(1.22)
+                        backgrounds.zPosition = -1
+                        addChild(backgrounds)
+                    }
                     let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
                     retryScreen.position = CGPoint(x: frame.midX, y: frame.midY)
                     retryScreen.zPosition = 1.0
