@@ -19,11 +19,18 @@ class MenuScene: SKScene {
     let info = SKLabelNode(fontNamed: "Chalkduster")
     let music = SKLabelNode(fontNamed: "Chalkduster")
 
+//    override func didMove(to view: SKView) {
+//
+//        let background = SKSpriteNode(imageNamed: "sky.png")
+//        background.position = CGPoint(x: size.width/2, y: size.height * 0.55)
+//        background.setScale(1.22)
+//        background.zPosition = -1
+//        addChild(background)
+//    }
     
     override init(size: CGSize) {
         super.init(size: size)
         
-        backgroundColor = SKColor.blue
         
         playButton.fontColor = SKColor.white
         playButton.text = "Level 1"
@@ -80,7 +87,15 @@ class MenuScene: SKScene {
             
             let reveal = SKTransition.doorsOpenHorizontal(withDuration: 5)
             
-            let scene = GameScene(size: self.size)
+            let scene = Level1(size: self.size)
+            self.view?.presentScene(scene, transition: reveal)
+            
+        }
+        else if l2.contains(touchLocation) {
+            
+            let reveal = SKTransition.doorsOpenHorizontal(withDuration: 5)
+            
+            let scene = Level2(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
             
         }
