@@ -1,3 +1,4 @@
+
 import Foundation
 import SpriteKit
 
@@ -28,6 +29,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var b_plate = true
     var l_plate = false
     var d_plate = false
+    var round1 = true
+    var round2 = false
+    var round3 = false
+    var done = false
+    var goal1 = 100
+    var goal2 = 100
+    var goal3 = 100
     
     //initialize player avatar
     let player = SKSpriteNode(imageNamed: "ram")
@@ -61,8 +69,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         // backgroundColor = SKColor.cyan
         
         //   let background = SKSpriteNode(imageNamed: "background_breakfast.png")
+        background_breakfast.size = self.frame.size
         background_breakfast.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-        background_breakfast.setScale(1.22)
+       // background_breakfast.setScale(1.22)
         background_breakfast.zPosition = -1
         addChild(background_breakfast)
         
@@ -131,7 +140,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         count_label.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
         count_label.zPosition = 1.0
         addChild(count_label)
-       
+        
         //add plates to keep track of players progress
         b_empty_plate.position = CGPoint(x: 100, y: 160)
         b_empty_plate.zPosition = 1.0
@@ -214,11 +223,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     }
     
     func addFood() {
-        
-        let randd = Int(arc4random_uniform(22))
-        // random number casted as int to pick food to show
-        let food = collection[randd].node.copy() as! SKSpriteNode
-        
+        var food = collection[0].node.copy() as! SKSpriteNode
+        done = false
+        while(!done) {
+            let randd = Int(arc4random_uniform(22))
+            // random number casted as int to pick food to show
+            if((round1 && collection[randd].b) || (round2 && collection[randd].l) || (round3 && collection[randd].d)) {
+                food = collection[randd].node.copy() as! SKSpriteNode
+                done = true
+            }
+        }
         
         // Determine where to spawn the food along the Y axis
         let actualY = random(min: food.size.height/2 + 230, max: size.height - food.size.height/2)
@@ -394,8 +408,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         l_plate = true
                         background_breakfast.removeFromParent()
                         //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
+                        background_lunch.size = self.frame.size
+
                         background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-                        background_lunch.setScale(1.22)
+                     //   background_lunch.setScale(1.22)
                         background_lunch.zPosition = -1
                         addChild(background_lunch)
                     }else if(count>100 && l_plate) {
@@ -410,8 +426,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         d_plate = true
                         background_lunch.removeFromParent()
                         //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
+                        background_dinner.size = self.frame.size
                         background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-                        background_dinner.setScale(1.22)
+                        //background_dinner.setScale(1.22)
                         background_dinner.zPosition = -1
                         addChild(background_dinner)
                     }else if(count>100 && d_plate) {
@@ -436,6 +453,15 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     //increment meter by number of carbs
     func incrementMeter(){
         foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / 5), height: foodMeter.size.height)
+        //        if (round1) {
+        //            foodMeter.size = CGSize(width: foodMeter.size.width + (carb_count / goal1), height: foodMeter.size.height)
+        //        } else if (round2) {
+        //            foodMeter.size = CGSize(width: foodMeter.size.width as Any + (carb_count / goal2), height: foodMeter.size.height)
+        //
+        //        } else if (round3) {
+        //            foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / goal3), height: foodMeter.size.height)
+        //        }
+        //        // take how big it was before and add one fifth
     }
     
     func resetMeter(){
