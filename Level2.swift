@@ -1,3 +1,11 @@
+//
+//  Level1.swift
+//  SpriteKitGame
+//
+//  Created by Marina Kashgarian on 4/5/17.
+//  Copyright © 2017 Marina Kashgarian. All rights reserved.
+//
+
 import Foundation
 import SpriteKit
 
@@ -8,26 +16,22 @@ enum object2:UInt32{
 
 class Level2: SKScene, SKPhysicsContactDelegate{
     var gameOver = false
+    
     //collection of food sprites
     var collection = [Foods]()
+    
+    // # of carbs collected
     var count = 0
-    let count_label = SKLabelNode(fontNamed: "Marker Felt")
-    let background_breakfast = SKSpriteNode(imageNamed: "background_breakfast")
-    let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
-    let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
     
-    var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
-    var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
-    
-    var l_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
-    var l_full_plate = SKSpriteNode(imageNamed: "full_plate")
-    
-    var d_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
-    var d_full_plate = SKSpriteNode(imageNamed: "full_plate")
-    
-    var b_plate = true
-    var l_plate = false
-    var d_plate = false
+    let background = SKSpriteNode(imageNamed: "background_breakfast.png")
+    let backgrounds = SKSpriteNode(imageNamed: "background_noon.png")
+    var round1 = true
+    var round2 = false
+    var round3 = false
+    var done = false
+    var goal1 = 100
+    var goal2 = 100
+    var goal3 = 100
     
     //initialize player avatar
     let player = SKSpriteNode(imageNamed: "ram")
@@ -35,10 +39,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var playerLocation = CGPoint(x: 0, y: 0)
     
     let successScreen = SKSpriteNode(imageNamed: "success-icon")
-    let levelTwoScreen = SKSpriteNode(imageNamed: "level2icon")
+    let levelOneScreen = SKSpriteNode(imageNamed: "level2icon")
     
     //pause when touch contact ends
-    let pauseScreen = SKSpriteNode(imageNamed: "paused_button")
+    let pauseScreen = SKLabelNode(fontNamed: "Chalkduster")
     
     // static var backgroundMusic = SKAudioNode(fileNamed: "GameSounds/BackgroundMusic.wav")
     
@@ -49,8 +53,15 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
+    //streak setting for Level 1
+    //round 1 streak of 10
+    //round 2 streak of 15
+    //round 3 streak of 20
+    //round 4 streak of 20 + speed up food icons
+    //round 5 streak of 20 + speed up food icons and decrease ratio of non-carb to carb items
+    var streak = 0
     
-    //meter to keep track of number of carbs per plate
+    //meter to keep track of streak
     var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
     
     
@@ -60,11 +71,12 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         //set background color
         // backgroundColor = SKColor.cyan
         
-        //   let background = SKSpriteNode(imageNamed: "background_breakfast.png")
-        background_breakfast.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-        background_breakfast.setScale(1.22)
-        background_breakfast.zPosition = -1
-        addChild(background_breakfast)
+     //   let background = SKSpriteNode(imageNamed: "background_breakfast.png")
+        background.size = self.frame.size
+        background.position = CGPoint(x: size.width/2, y: size.height * 0.55)
+       // background.setScale(1.22)
+        background.zPosition = -1
+        addChild(background)
         
         
         //add background music
@@ -108,7 +120,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         foodMeter.anchorPoint = CGPoint(x: 0.0, y: 0.5)
         addChild(foodMeter)
         
-        
+        //create pause screen attributes - add pause screen when touch contact ends
+        pauseScreen.text = "PAUSED"
+        pauseScreen.fontSize = 150
+        pauseScreen.fontColor = SKColor.black
         pauseScreen.position = CGPoint(x: frame.midX, y: frame.midY)
         pauseScreen.zPosition = 1.0
         
@@ -117,33 +132,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         successScreen.zPosition = 1.0
         
         
-        levelTwoScreen.position = CGPoint(x: frame.midX, y: frame.midY)
-        levelTwoScreen.zPosition = 1.0
-        addChild(levelTwoScreen)
-        levelTwoScreen.run(
+        levelOneScreen.position = CGPoint(x: frame.midX, y: frame.midY)
+        levelOneScreen.zPosition = 1.0
+        addChild(levelOneScreen)
+        levelOneScreen.run(
             SKAction.fadeOut(withDuration: 0.5)
         )
         
-        
-        count_label.text = "CARBS: \(count) g"
-        count_label.fontSize = 30
-        count_label.fontColor = SKColor.blue
-        count_label.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
-        count_label.zPosition = 1.0
-        addChild(count_label)
-       
-        //add plates to keep track of players progress
-        b_empty_plate.position = CGPoint(x: 100, y: 160)
-        b_empty_plate.zPosition = 1.0
-        addChild(b_empty_plate)
-        
-        l_empty_plate.position = CGPoint(x: 200, y: 160)
-        l_empty_plate.zPosition = 1.0
-        addChild(l_empty_plate)
-        
-        d_empty_plate.position = CGPoint(x: 300, y: 160)
-        d_empty_plate.zPosition = 1.0
-        addChild(d_empty_plate)
     }
     
     // RECOGNIZING TOUCH GESTURES
@@ -214,14 +209,19 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     }
     
     func addFood() {
-        
-        let randd = Int(arc4random_uniform(22))
-        // random number casted as int to pick food to show
-        let food = collection[randd].node.copy() as! SKSpriteNode
-        
-        
+        var food = collection[0].node.copy() as! SKSpriteNode
+        done = false
+        while(!done) {
+            let randd = Int(arc4random_uniform(22))
+            // random number casted as int to pick food to show
+            if((round1 && collection[randd].b) || (round2 && collection[randd].l) || (round3 && collection[randd].d)) {
+                food = collection[randd].node.copy() as! SKSpriteNode
+                done = true
+            }
+        }
+    
         // Determine where to spawn the food along the Y axis
-        let actualY = random(min: food.size.height/2 + 230, max: size.height - food.size.height/2)
+        let actualY = random(min: food.size.height/2 + 100, max: size.height - food.size.height/2)
         
         food.position = CGPoint(x: size.width + food.size.width/2, y: actualY)
         food.physicsBody = SKPhysicsBody(circleOfRadius: food.size.width/2)
@@ -378,53 +378,58 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             if food.node.texture == node.texture {
                 if(!food.carb){
                     playSound(sound: good_carb)
+                    streak += 1
+
                 }else{
+                    incrementMeter(carb_count: food.carb_count)
                     playSound(sound: bad_carb)
                     count += food.carb_count
-                    count_label.text = "CARBS: \(count) g"
-                    if(count>100 && b_plate) {
-                        count = 0
-                        count_label.text = "CARBS: \(count) g"
-                        b_plate = false
-                        b_empty_plate.removeFromParent()
-                        b_full_plate.position = CGPoint(x: 100, y: 160)
-                        b_full_plate.zPosition = 1.0
-                        addChild(b_full_plate)
-                        
-                        l_plate = true
-                        background_breakfast.removeFromParent()
-                        //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
-                        background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-                        background_lunch.setScale(1.22)
-                        background_lunch.zPosition = -1
-                        addChild(background_lunch)
-                    }else if(count>100 && l_plate) {
-                        count = 0
-                        count_label.text = "CARBS: \(count) g"
-                        l_plate = false
-                        l_empty_plate.removeFromParent()
-                        l_full_plate.position = CGPoint(x: 200, y: 160)
-                        l_full_plate.zPosition = 1.0
-                        addChild(l_full_plate)
-                        
-                        d_plate = true
-                        background_lunch.removeFromParent()
-                        //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
-                        background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-                        background_dinner.setScale(1.22)
-                        background_dinner.zPosition = -1
-                        addChild(background_dinner)
-                    }else if(count>100 && d_plate) {
-                        d_plate = false
-                        d_empty_plate.removeFromParent()
-                        d_full_plate.position = CGPoint(x: 300, y: 160)
-                        d_full_plate.zPosition = 1.0
-                        addChild(d_full_plate)
+                    if(count>100 && count<=200 && !round2) {
+                        // start round 2
+                        round1 = false
+                        round2 = true
+                        print("Count: \(count)")
+                        backgrounds.removeFromParent()
+                        let background = SKSpriteNode(imageNamed: "background_noon.png")
+                        background.size = self.frame.size
+                        background.position = CGPoint(x: size.width/2, y: size.height * 0.55)
+                       // background.setScale(1.22)
+                        background.zPosition = -1
+                        addChild(background)
+                    
+                    }
+                    if(count>200 && !round3) {
+                        print("Count: \(count)")
+
+                        // start round 3
+                        round2 = false
+                        round3 = true
+                        background.removeFromParent()
+                        let backgrounds = SKSpriteNode(imageNamed: "background_night.png")
+                        backgrounds.size = self.frame.size
+
+                        backgrounds.position = CGPoint(x: size.width/2, y: size.height * 0.55)
+                       // backgrounds.setScale(1.22)
+                        backgrounds.zPosition = -1
+                        addChild(backgrounds)
+                    }
+//                    let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+//                    retryScreen.position = CGPoint(x: frame.midX, y: frame.midY)
+//                    retryScreen.zPosition = 1.0
+//                    addChild(retryScreen)
+//                    retryScreen.run(
+//                        SKAction.fadeOut(withDuration: 0.5)
+//                    )
+                    streak = 0
+                    resetMeter()
+                    if(count>300){
                         endRound()
                     }
                 }
             }
         }
+        
+
         
     }
     
@@ -434,8 +439,18 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     
     //increment meter by number of carbs
-    func incrementMeter(){
-        foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / 5), height: foodMeter.size.height)
+    func incrementMeter(carb_count: Int){ 
+
+//        foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / 5), height: foodMeter.size.height)
+//        if (round1) {
+//            foodMeter.size = CGSize(width: foodMeter.size.width + (carb_count / goal1), height: foodMeter.size.height)
+//        } else if (round2) {
+//            foodMeter.size = CGSize(width: foodMeter.size.width as Any + (carb_count / goal2), height: foodMeter.size.height)
+//
+//        } else if (round3) {
+//            foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / goal3), height: foodMeter.size.height)
+//        }
+//        // take how big it was before and add one fifth
     }
     
     func resetMeter(){
