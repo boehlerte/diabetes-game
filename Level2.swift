@@ -390,11 +390,17 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             if food.node.texture == node.texture {
                 if(!food.carb){
                     playSound(sound: good_carb)
+                    carbCountAlert(carbs: food.carb_count)
                 }else{
                     playSound(sound: bad_carb)
                     count += food.carb_count
                     count_label.text = "CARBS: \(count) g"
                     incrementMeter(carbs: food.carb_count)
+                    
+                    //alert player with number of carbs of item they collected
+                    carbCountAlert(carbs: food.carb_count)
+
+                    
                     if(count>100 && b_plate) {
                         count = 0
                         count_label.text = "CARBS: \(count) g"
@@ -448,6 +454,23 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     func playSound(sound : SKAction) {
         run(sound)
+    }
+    
+    func carbCountAlert(carbs: Int){
+        let food_number = SKLabelNode(fontNamed: "Marker Felt")
+        
+        //alert the player with the number of carbs of each item they collect
+        food_number.text = "\(carbs)"
+        food_number.fontSize = 100
+        food_number.fontColor = SKColor.green
+        food_number.position = CGPoint(x: frame.midX, y: frame.midY)
+        food_number.zPosition = 1.0
+        addChild(food_number)
+        
+        let scaleUp = SKAction.scale(to: 2.0, duration: 0.2)
+        let fade = SKAction.fadeOut(withDuration: 0.2)
+        let sequence = SKAction.sequence([scaleUp, fade])
+        food_number.run(sequence)
     }
     
     
