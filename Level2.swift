@@ -1,4 +1,3 @@
-
 import Foundation
 import SpriteKit
 
@@ -29,10 +28,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var b_plate = true
     var l_plate = false
     var d_plate = false
-    var round1 = true
-    var round2 = false
-    var round3 = false
+  
     var done = false
+    
     var goal1 = 100
     var goal2 = 100
     var goal3 = 100
@@ -71,7 +69,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         //   let background = SKSpriteNode(imageNamed: "background_breakfast.png")
         background_breakfast.size = self.frame.size
         background_breakfast.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-       // background_breakfast.setScale(1.22)
+        // background_breakfast.setScale(1.22)
         background_breakfast.zPosition = -1
         addChild(background_breakfast)
         
@@ -228,7 +226,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         while(!done) {
             let randd = Int(arc4random_uniform(22))
             // random number casted as int to pick food to show
-            if((round1 && collection[randd].b) || (round2 && collection[randd].l) || (round3 && collection[randd].d)) {
+            if((b_plate && collection[randd].b) || (l_plate && collection[randd].l) || (d_plate && collection[randd].d)) {
                 food = collection[randd].node.copy() as! SKSpriteNode
                 done = true
             }
@@ -396,9 +394,11 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                     playSound(sound: bad_carb)
                     count += food.carb_count
                     count_label.text = "CARBS: \(count) g"
+                    incrementMeter(carbs: food.carb_count)
                     if(count>100 && b_plate) {
                         count = 0
                         count_label.text = "CARBS: \(count) g"
+                        resetMeter()
                         b_plate = false
                         b_empty_plate.removeFromParent()
                         b_full_plate.position = CGPoint(x: 100, y: 160)
@@ -409,14 +409,15 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         background_breakfast.removeFromParent()
                         //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
                         background_lunch.size = self.frame.size
-
+                        
                         background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-                     //   background_lunch.setScale(1.22)
+                        //   background_lunch.setScale(1.22)
                         background_lunch.zPosition = -1
                         addChild(background_lunch)
                     }else if(count>100 && l_plate) {
                         count = 0
                         count_label.text = "CARBS: \(count) g"
+                        resetMeter()
                         l_plate = false
                         l_empty_plate.removeFromParent()
                         l_full_plate.position = CGPoint(x: 200, y: 160)
@@ -451,17 +452,26 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     
     //increment meter by number of carbs
-    func incrementMeter(){
-        foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / 5), height: foodMeter.size.height)
-        //        if (round1) {
-        //            foodMeter.size = CGSize(width: foodMeter.size.width + (carb_count / goal1), height: foodMeter.size.height)
-        //        } else if (round2) {
-        //            foodMeter.size = CGSize(width: foodMeter.size.width as Any + (carb_count / goal2), height: foodMeter.size.height)
-        //
-        //        } else if (round3) {
-        //            foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width / goal3), height: foodMeter.size.height)
-        //        }
-        //        // take how big it was before and add one fifth
+    func incrementMeter(carbs: Int){
+        
+        if(b_plate){
+            let carbs = (Float)(carbs)
+            let goal1 = (Float) (self.goal1)
+            let meter_count = CGFloat(carbs/goal1)
+            foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width * meter_count), height: foodMeter.size.height)
+        }else if(l_plate){
+            let carbs = (Float)(carbs)
+            let goal2 = (Float) (self.goal2)
+            let meter_count = CGFloat(carbs/goal2)
+            foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width * meter_count), height: foodMeter.size.height)
+        }else if(d_plate){
+            let carbs = (Float)(carbs)
+            let goal3 = (Float) (self.goal3)
+            let meter_count = CGFloat(carbs/goal3)
+            foodMeter.size = CGSize(width: foodMeter.size.width + (frame.size.width * meter_count), height: foodMeter.size.height)
+        }
+        
+        
     }
     
     func resetMeter(){
