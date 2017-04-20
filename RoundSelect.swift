@@ -13,59 +13,44 @@ import UIKit
 class RoundSelect: SKScene {
     
     
-    let r1 = SKLabelNode(fontNamed: "Chalkduster")
-    let r2 = SKLabelNode(fontNamed: "Chalkduster")
-    let r3 = SKLabelNode(fontNamed: "Chalkduster")
-    let r4 = SKLabelNode(fontNamed: "Chalkduster")
-    let r5 = SKLabelNode(fontNamed: "Chalkduster")
+
     static var round = 0
     
-//    let r1 = SKSpriteNode(imageNamed: "")
-//    let r2 = SKSpriteNode(imageNamed: "")
-//    let r3 = SKSpriteNode(imageNamed: "")
-//    let r4 = SKSpriteNode(imageNamed: "")
-//    let r5 = SKSpriteNode(imageNamed: "")
+    let r1 = SKSpriteNode(imageNamed: "1")
+    let r2 = SKSpriteNode(imageNamed: "2")
+    let r3 = SKSpriteNode(imageNamed: "3")
+    let r4 = SKSpriteNode(imageNamed: "4")
+    let r5 = SKSpriteNode(imageNamed: "5")
+    let round_sel = SKSpriteNode(imageNamed: "pick_a_round_button")
+    let bg = SKSpriteNode(imageNamed: "blue_screen")
+
     
     override func didMove(to view: SKView) {
-        backgroundColor = SKColor.cyan
+        bg.size = self.frame.size
+        bg.position = CGPoint(x: size.width/2, y: size.height/2)
+        bg.zPosition = -1
+        addChild(bg)
     }
     
     
     override init(size: CGSize) {
         super.init(size: size)
         
-        //r1.setScale(2)
-        r1.fontColor = SKColor.white
-        r1.text = "1"
-        r1.fontSize = 50
+        round_sel.position = CGPoint(x: size.width * 0.5, y: size.height * 0.8)
+        addChild(round_sel)
+        
         r1.position = CGPoint(x: size.width * 1/6, y: size.height * 0.5)
         addChild(r1)
         
-        //r2.setScale(2)
-        r2.fontColor = SKColor.white
-        r2.text = "2"
-        r2.fontSize = 50
         r2.position = CGPoint(x: size.width * 2/6, y: size.height * 0.5)
         addChild(r2)
         
-        //r3.setScale(2)
-        r3.fontColor = SKColor.white
-        r3.text = "3"
-        r3.fontSize = 50
         r3.position = CGPoint(x: size.width * 3/6, y: size.height * 0.5)
         addChild(r3)
 
-        //r4.setScale(2)
-        r4.fontColor = SKColor.white
-        r4.text = "4"
-        r4.fontSize = 50
         r4.position = CGPoint(x: size.width * 4/6, y: size.height * 0.5)
         addChild(r4)
         
-      //  r5.setScale(2)
-        r5.fontColor = SKColor.white
-        r5.text = "5"
-        r5.fontSize = 50
         r5.position = CGPoint(x: size.width * 5/6, y: size.height * 0.5)
         addChild(r5)
         
@@ -104,7 +89,7 @@ class RoundSelect: SKScene {
                 let scene = Level2(size: self.size)
                 self.view?.presentScene(scene, transition: reveal)
             } else if(MenuScene.level == 3){
-                let scene = Level2(size: self.size)
+                let scene = Level3(size: self.size)
                 self.view?.presentScene(scene, transition: reveal)
             }
         }
