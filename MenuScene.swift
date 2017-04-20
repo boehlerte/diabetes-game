@@ -10,7 +10,7 @@ import UIKit
 
 import Foundation
 class MenuScene: SKScene {
-    
+
     
     let info = SKLabelNode(fontNamed: "Chalkduster")
     let music = SKLabelNode(fontNamed: "Chalkduster")
@@ -18,8 +18,15 @@ class MenuScene: SKScene {
     var l2 = SKSpriteNode(imageNamed: "level_2_button")
     var l3 = SKSpriteNode(imageNamed: "level_3_button")
     let bg = SKSpriteNode(imageNamed: "menu_background")
+    let l1_howto1 = SKSpriteNode(imageNamed: "l1_instr")
+
+
     static var level = 0
 
+    var l1instr = SKSpriteNode(imageNamed: "level_1_button")
+    var l2instr = SKSpriteNode(imageNamed: "level_2_button")
+    var l3instr = SKSpriteNode(imageNamed: "level_3_button")
+    
     override func didMove(to view: SKView) {
         bg.size = self.frame.size
         bg.position = CGPoint(x: size.width/2, y: size.height/2)
@@ -31,17 +38,26 @@ class MenuScene: SKScene {
     override init(size: CGSize) {
         super.init(size: size)
 
-        l1.setScale(2)
-        l1.position = CGPoint(x: size.width / 2, y: size.height * 0.6)
+        l1.setScale(1.7)
+        l1.position = CGPoint(x: size.width * 0.25, y: size.height * 0.6)
         addChild(l1)
+        l1instr.setScale(1.7)
+        l1instr.position = CGPoint(x: size.width * 0.75, y: size.height * 0.6)
+        addChild(l1instr)
 
-        l2.setScale(2)
-        l2.position = CGPoint(x: size.width / 2, y: size.height * 0.4)
+        l2.setScale(1.7)
+        l2.position = CGPoint(x: size.width * 0.25, y: size.height * 0.4)
         addChild(l2)
+        l2instr.setScale(1.7)
+        l2instr.position = CGPoint(x: size.width * 0.75, y: size.height * 0.4)
+        addChild(l2instr)
         
-        l3.setScale(2)
-        l3.position = CGPoint(x: size.width / 2, y: size.height * 0.2)
+        l3.setScale(1.7)
+        l3.position = CGPoint(x: size.width * 0.25, y: size.height * 0.2)
         addChild(l3)
+        l3instr.setScale(1.7)
+        l3instr.position = CGPoint(x: size.width * 0.75, y: size.height * 0.2)
+        addChild(l3instr)
         
 //        info.fontColor = SKColor.white
 //        info.text = "Info Tab"
@@ -77,5 +93,22 @@ class MenuScene: SKScene {
             let scene = RoundSelect(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
         }
+        // instruction buttons
+        if l1instr.contains(touchLocation) {
+            // if instruction button clicked
+            l1_howto1.setScale(0.5)
+            l1_howto1.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+            l1_howto1.zPosition=1
+            addChild(l1_howto1)
+        }
+        else if l1_howto1.contains(touchLocation) {
+            // if first instr page clicked
+                l1_howto1.removeFromParent()
+                //l1_howto1.zPosition = -2
+
+        }
+
     }
+    
+
 }
