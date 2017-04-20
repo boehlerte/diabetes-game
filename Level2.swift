@@ -8,6 +8,8 @@ enum object2:UInt32{
 
 class Level2: SKScene, SKPhysicsContactDelegate{
     var gameOver = false
+    //hint bar open variable
+    var isOpen = false
     //collection of food sprites
     var collection = [Foods]()
     var collectedItems = [Foods]()
@@ -115,6 +117,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         meterFrame.physicsBody = SKPhysicsBody(edgeFrom: CGPoint(x:0, y:100), to: CGPoint(x:
             size.width, y: 100))
         foodMeter.position = CGPoint(x: 0 , y: 50)
+        foodMeter.zPosition = 1.5
         foodMeter.anchorPoint = CGPoint(x: 0.0, y: 0.5)
         addChild(foodMeter)
         
@@ -139,22 +142,22 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         count_label.fontSize = 30
         count_label.fontColor = SKColor.blue
         count_label.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
-        count_label.zPosition = 1.0
+        count_label.zPosition = 1.5
         addChild(count_label)
         
         //add plates to keep track of players progress
         b_empty_plate.position = CGPoint(x: 100, y: 160)
-        b_empty_plate.zPosition = 1.0
+        b_empty_plate.zPosition = 1.5
         b_empty_plate.name = "b_plate"
         addChild(b_empty_plate)
         
         l_empty_plate.position = CGPoint(x: 200, y: 160)
-        l_empty_plate.zPosition = 1.0
+        l_empty_plate.zPosition = 1.5
         l_empty_plate.name = "l_plate"
         addChild(l_empty_plate)
         
         d_empty_plate.position = CGPoint(x: 300, y: 160)
-        d_empty_plate.zPosition = 1.0
+        d_empty_plate.zPosition = 1.5
         d_empty_plate.name = "d_plate"
         addChild(d_empty_plate)
     }
@@ -199,10 +202,53 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             view?.scene?.isPaused = true
             addChild(pauseScreen)
             
-            if (b_empty_plate.contains(touchLocation) || l_empty_plate.contains(touchLocation) || d_empty_plate.contains(touchLocation)){
+            let collectedItemsLabel = SKLabelNode(fontNamed: "Marker Felt")
+            let tipLabel = SKLabelNode(fontNamed: "Marker Felt")
+            let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
+            
+            if (!isOpen && (b_empty_plate.contains(touchLocation) || l_empty_plate.contains(touchLocation) || d_empty_plate.contains(touchLocation))){
+                var count = 100
+                isOpen = true
+                
+                collectedItemsLabel.fontSize = 100
+                collectedItemsLabel.text = "Collected Items:"
+                collectedItemsLabel.position = CGPoint(x: frame.midX, y: frame.midY + 200)
+                collectedItemsLabel.zPosition = 3.5
+                collectedItemsLabel.fontColor = SKColor.blue
+                addChild(collectedItemsLabel)
+                
+                tipLabel.fontSize = 100
+                tipLabel.text = "Try this food next:"
+                tipLabel.position = CGPoint(x: frame.midX, y: frame.midY - 100)
+                tipLabel.zPosition = 3.5
+                tipLabel.fontColor = SKColor.blue
+                addChild(tipLabel)
+                
+                
+                collectionBackground.size = self.frame.size
+                collectionBackground.position = CGPoint(x: frame.midX, y: frame.midY)
+                collectionBackground.zPosition = 1.5
+                addChild(collectionBackground)
+                
                 for items in collectedItems{
                     print(items.node)
+                    
+                    let itemCard = items.node
+                    let floatCount = (CGFloat)(count)
+                    itemCard.position = CGPoint(x: floatCount, y: frame.midY + 100)
+                    itemCard.zPosition = 2.0
+                    itemCard.name = "hint"
+                    addChild(itemCard)
+                    count += 100
                 }
+            }else if(isOpen &&  collectionBackground.contains(touchLocation)){
+                isOpen = false
+                for child in self.children {
+                    if child.name == "hint" {
+                        child.removeFromParent()
+                    }
+                }
+                
             }
             
         }else{
@@ -253,7 +299,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         var food = collection[0].node.copy() as! SKSpriteNode
         done = false
         while(!done) {
-            let randd = Int(arc4random_uniform(22))
+            let randd = Int(arc4random_uniform(20))
             // random number casted as int to pick food to show
             if((b_plate && collection[randd].b) || (l_plate && collection[randd].l) || (d_plate && collection[randd].d)) {
                 food = collection[randd].node.copy() as! SKSpriteNode
@@ -303,91 +349,111 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         
         let pizzaNode = SKSpriteNode(imageNamed: "Foods.sprite/pizza.png")
         let f1 = Foods(node: pizzaNode, carb_count: 30, carb: true, b: false, l:true, d:true)
+        f1.node.name = "pizza"
         collection.append(f1)
         
         let appleNode = SKSpriteNode(imageNamed: "Foods.sprite/apple.png")
         let f2 = Foods(node: appleNode, carb_count: 15, carb: true, b: true, l:true, d:false)
+        f2.node.name = "apple"
         collection.append(f2)
         
         let burgerNode = SKSpriteNode(imageNamed: "Foods.sprite/burger.png")
         let f3 = Foods(node: burgerNode, carb_count: 30, carb: true, b: false, l:true, d:true)
+        f3.node.name = "burger"
         collection.append(f3)
         
         let broccoliNode = SKSpriteNode(imageNamed: "Foods.sprite/broccoli.png")
         let f4 = Foods(node: broccoliNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        f4.node.name = "broccoli"
         collection.append(f4)
         
         let bananaNode = SKSpriteNode(imageNamed: "Foods.sprite/banana.png")
         let f5 = Foods(node: bananaNode, carb_count: 15, carb: true, b: true, l:true, d:false)
+        f5.node.name = "banana"
         collection.append(f5)
         
         let cookieNode = SKSpriteNode(imageNamed: "Foods.sprite/cookie.png")
         let f6 = Foods(node: cookieNode, carb_count: 9, carb: true, b: true, l:true, d:true)
+        f6.node.name = "cookie"
         collection.append(f6)
         
         let donutNode = SKSpriteNode(imageNamed: "Foods.sprite/donut.png")
         let f7 = Foods(node: donutNode, carb_count: 22, carb: true, b: true, l:true, d:true)
+        f7.node.name = "donut"
         collection.append(f7)
         
         let friesNode = SKSpriteNode(imageNamed: "Foods.sprite/fries.png")
         let f8 = Foods(node: friesNode, carb_count: 45, carb: true, b: false, l:true, d:true)
+        f8.node.name = "fries"
         collection.append(f8)
         
         let grapesNode = SKSpriteNode(imageNamed: "Foods.sprite/grapes.png")
         let f9 = Foods(node: grapesNode, carb_count: 15, carb: true, b: true, l:true, d:false)
+        f9.node.name = "grapes"
         collection.append(f9)
         
         let hotdogNode = SKSpriteNode(imageNamed: "Foods.sprite/hotdog.png")
         let f10 = Foods(node: hotdogNode, carb_count: 21, carb: true, b: false, l:true, d:true)
+        f10.node.name = "hotdog"
         collection.append(f10)
         
         let ice_creamNode = SKSpriteNode(imageNamed: "Foods.sprite/ice_cream.png")
         let f11 = Foods(node: ice_creamNode, carb_count: 23, carb: true, b: false, l:true, d:true)
+        f11.node.name = "ice_cream"
         collection.append(f11)
         
-        let mangoNode = SKSpriteNode(imageNamed: "Foods.sprite/mango.png")
-        let f12 = Foods(node: mangoNode, carb_count: 50, carb: true, b: true, l:true, d:false)
-        collection.append(f12)
+//        let mangoNode = SKSpriteNode(imageNamed: "Foods.sprite/mango.png")
+//        let f12 = Foods(node: mangoNode, carb_count: 50, carb: true, b: true, l:true, d:false)
+//        collection.append(f12)
         
         let peachNode = SKSpriteNode(imageNamed: "Foods.sprite/peach.png")
-        let f13 = Foods(node: peachNode, carb_count: 14, carb: true, b: true, l:true, d:false)
-        collection.append(f13)
+        let f12 = Foods(node: peachNode, carb_count: 14, carb: true, b: true, l:true, d:false)
+        f12.node.name = "peach"
+        collection.append(f12)
         
         let baconNode = SKSpriteNode(imageNamed: "Foods.sprite/bacon.png")
-        let f14 = Foods(node: baconNode, carb_count: 0, carb: false, b: true, l:true, d:false)
-        collection.append(f14)
+        let f13 = Foods(node: baconNode, carb_count: 0, carb: false, b: true, l:true, d:false)
+        f13.node.name = "bacon"
+        collection.append(f13)
         
         let carrotNode = SKSpriteNode(imageNamed: "Foods.sprite/carrot.png")
-        let f15 = Foods(node: carrotNode, carb_count: 0, carb: false, b: false, l:true, d:true)
-        collection.append(f15)
+        let f14 = Foods(node: carrotNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        f14.node.name = "carrot"
+        collection.append(f14)
         
         let celeryNode = SKSpriteNode(imageNamed: "Foods.sprite/celery.png")
-        let f16 = Foods(node: celeryNode, carb_count: 0, carb: false, b: false, l:true, d:true)
-        collection.append(f16)
+        let f15 = Foods(node: celeryNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        f15.node.name = "celery"
+        collection.append(f15)
         
         let chickenNode = SKSpriteNode(imageNamed: "Foods.sprite/chicken.png")
-        let f17 = Foods(node: chickenNode, carb_count: 0, carb: false, b: true, l:true, d:true)
-        collection.append(f17)
+        let f16 = Foods(node: chickenNode, carb_count: 0, carb: false, b: true, l:true, d:true)
+        f16.node.name = "chicken"
+        collection.append(f16)
         
         let fishNode = SKSpriteNode(imageNamed: "Foods.sprite/fish.png")
-        let f18 = Foods(node: fishNode, carb_count: 0, carb: false, b: false, l:true, d:true)
-        collection.append(f18)
+        let f17 = Foods(node: fishNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        f17.node.name = "fish"
+        collection.append(f17)
         
         let mushroomNode = SKSpriteNode(imageNamed: "Foods.sprite/mushroom.png")
-        let f19 = Foods(node: mushroomNode, carb_count: 0, carb: false, b: false, l:true, d:true)
-        collection.append(f19)
+        let f18 = Foods(node: mushroomNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        f18.node.name = "mushroom"
+        collection.append(f18)
         
-        let porkNode = SKSpriteNode(imageNamed: "Foods.sprite/pork.png")
-        let f20 = Foods(node: porkNode, carb_count: 0, carb: false, b: true, l:true, d:true)
-        collection.append(f20)
+//        let porkNode = SKSpriteNode(imageNamed: "Foods.sprite/pork.png")
+//        let f20 = Foods(node: porkNode, carb_count: 0, carb: false, b: true, l:true, d:true)
+//        collection.append(f20)
         
         let spinachNode = SKSpriteNode(imageNamed: "Foods.sprite/spinach.png")
-        let f21 = Foods(node: spinachNode, carb_count: 0, carb: false, b: false, l:true, d:true)
-        collection.append(f21)
+        let f19 = Foods(node: spinachNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        f19.node.name = "spinach"
+        collection.append(f19)
         
         let steakNode = SKSpriteNode(imageNamed: "Foods.sprite/steak.png")
-        let f22 = Foods(node: steakNode, carb_count: 0, carb: false, b: false, l:true, d:true)
-        collection.append(f22)
+        let f20 = Foods(node: steakNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        f20.node.name = "steak"
+        collection.append(f20)
         
         
         
@@ -416,78 +482,95 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     func testFoodNode(node: SKSpriteNode){
         for food in collection {
-            if food.node.texture == node.texture {
-                //alert player with number of carbs of item they collected
-                carbCountAlert(carbs: food.carb_count)
-                
-                //add food to collectedItems
-                collectedItems.append(food)
-                
-                if(!food.carb){
-                    playSound(sound: good_carb)
-                    
-                }else{
-                    playSound(sound: bad_carb)
-                    count += food.carb_count
-                    count_label.text = "CARBS: \(count) g"
-                    incrementMeter(carbs: food.carb_count)
-                    
-                   
-                    
-                    if(count>100 && b_plate) {
-                        //reset all parameters to prepare for lunch round
-                        count = 0
-                        count_label.text = "CARBS: \(count) g"
-                        resetMeter()
-                        b_plate = false
-                        b_empty_plate.removeFromParent()
-                        b_full_plate.position = CGPoint(x: 100, y: 160)
-                        b_full_plate.zPosition = 1.0
-                        addChild(b_full_plate)
-                        background_breakfast.removeFromParent()
-                        collectedItems.removeAll()
-                        
-                        //set up lunch round
-                        l_plate = true
-                        
-                        //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
-                        background_lunch.size = self.frame.size
-                        background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-                        //   background_lunch.setScale(1.22)
-                        background_lunch.zPosition = -1
-                        addChild(background_lunch)
-                    }else if(count>100 && l_plate) {
-                        //reset all parameters to prepare for dinner round
-                        count = 0
-                        count_label.text = "CARBS: \(count) g"
-                        resetMeter()
-                        l_plate = false
-                        l_empty_plate.removeFromParent()
-                        l_full_plate.position = CGPoint(x: 200, y: 160)
-                        l_full_plate.zPosition = 1.0
-                        addChild(l_full_plate)
-                        background_lunch.removeFromParent()
-                        collectedItems.removeAll()
-                        
-                        //set up dinner round
-                        d_plate = true
-                        //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
-                        background_dinner.size = self.frame.size
-                        background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.55)
-                        //background_dinner.setScale(1.22)
-                        background_dinner.zPosition = -1
-                        addChild(background_dinner)
-                    }else if(count>100 && d_plate) {
-                        d_plate = false
-                        d_empty_plate.removeFromParent()
-                        d_full_plate.position = CGPoint(x: 300, y: 160)
-                        d_full_plate.zPosition = 1.0
-                        addChild(d_full_plate)
-                        endRound()
+            
+                if food.node.texture == node.texture {
+                    for item in collectedItems {
+                        if(food.node.texture == item.node.texture){
+                            print("duplicate item")
+                            let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+                            retryScreen.position = CGPoint(x: frame.midX, y: frame.midY)
+                            retryScreen.zPosition = 1.0
+                            addChild(retryScreen)
+                            retryScreen.run(
+                                SKAction.fadeOut(withDuration: 0.5)
+                            )
+                        }
                     }
-                }
+                        //alert player with number of carbs of item they collected
+                        carbCountAlert(carbs: food.carb_count)
+                        
+                        //add food to collectedItems
+                        collectedItems.append(food)
+                        
+                        if(!food.carb){
+                            playSound(sound: good_carb)
+                            
+                        }else{
+                            playSound(sound: bad_carb)
+                            count += food.carb_count
+                            count_label.text = "CARBS: \(count) g"
+                            incrementMeter(carbs: food.carb_count)
+                            
+                            
+                            
+                            if(count>100 && b_plate) {
+                                //reset all parameters to prepare for lunch round
+                                count = 0
+                                count_label.text = "CARBS: \(count) g"
+                                resetMeter()
+                                b_plate = false
+                                b_empty_plate.removeFromParent()
+                                b_full_plate.position = CGPoint(x: 100, y: 160)
+                                b_full_plate.zPosition = 1.0
+                                addChild(b_full_plate)
+                                background_breakfast.removeFromParent()
+                                collectedItems.removeAll()
+                                
+                                //set up lunch round
+                                l_plate = true
+                                
+                                //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
+                                background_lunch.size = self.frame.size
+                                background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
+                                //   background_lunch.setScale(1.22)
+                                background_lunch.zPosition = -1
+                                addChild(background_lunch)
+                            }else if(count>100 && l_plate) {
+                                //reset all parameters to prepare for dinner round
+                                count = 0
+                                count_label.text = "CARBS: \(count) g"
+                                resetMeter()
+                                l_plate = false
+                                l_empty_plate.removeFromParent()
+                                l_full_plate.position = CGPoint(x: 200, y: 160)
+                                l_full_plate.zPosition = 1.0
+                                addChild(l_full_plate)
+                                background_lunch.removeFromParent()
+                                collectedItems.removeAll()
+                                
+                                //set up dinner round
+                                d_plate = true
+                                //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
+                                background_dinner.size = self.frame.size
+                                background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.55)
+                                //background_dinner.setScale(1.22)
+                                background_dinner.zPosition = -1
+                                addChild(background_dinner)
+                            }else if(count>100 && d_plate) {
+                                d_plate = false
+                                d_empty_plate.removeFromParent()
+                                d_full_plate.position = CGPoint(x: 300, y: 160)
+                                d_full_plate.zPosition = 1.0
+                                addChild(d_full_plate)
+                                endRound()
+                            }
+                        }
+                        
+                
+                        
             }
         }
+        
         
     }
     
