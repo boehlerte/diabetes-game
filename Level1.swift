@@ -18,6 +18,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     let successScreen = SKSpriteNode(imageNamed: "success-icon")
     let levelOneScreen = SKSpriteNode(imageNamed: "level1icon")
     let background_lunch = SKSpriteNode(imageNamed: "background_breakfast")
+    let back = SKSpriteNode(imageNamed: "back_button")
     
     //pause when touch contact ends
     let pauseScreen = SKLabelNode(fontNamed: "Chalkduster")
@@ -64,6 +65,11 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         player.physicsBody?.contactTestBitMask = object.food.rawValue
         player.name = "player"
         addChild(player)
+        
+        back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
+        back.zPosition = 1.0
+        back.setScale(0.25)
+        addChild(back)
         
         // change non-carb goal depending on round selected
         if(RoundSelect.round==1) {
@@ -173,7 +179,13 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?){
-        if (!gameOver){
+        let touch = touches.first
+        let touchLocation = touch!.location(in: self)
+        if(back.contains(touchLocation)) {
+            let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
+            let scene = MenuScene(size: self.size)
+            self.view?.presentScene(scene, transition: reveal)
+        } else if (!gameOver){
             playerTouched = false
             //pause game when player lifts finger
             view?.scene?.isPaused = true

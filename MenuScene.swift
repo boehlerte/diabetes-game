@@ -23,9 +23,9 @@ class MenuScene: SKScene {
 
     static var level = 0
 
-    var l1instr = SKSpriteNode(imageNamed: "level_1_button")
-    var l2instr = SKSpriteNode(imageNamed: "level_2_button")
-    var l3instr = SKSpriteNode(imageNamed: "level_3_button")
+    var l1instr = SKSpriteNode(imageNamed: "instructions_button")
+    var l2instr = SKSpriteNode(imageNamed: "instructions_button")
+    var l3instr = SKSpriteNode(imageNamed: "instructions_button")
     
     override func didMove(to view: SKView) {
         bg.size = self.frame.size
@@ -39,24 +39,24 @@ class MenuScene: SKScene {
         super.init(size: size)
 
         l1.setScale(1.7)
-        l1.position = CGPoint(x: size.width * 0.25, y: size.height * 0.6)
+        l1.position = CGPoint(x: size.width * 0.5, y: size.height * 0.6)
         addChild(l1)
-        l1instr.setScale(1.7)
-        l1instr.position = CGPoint(x: size.width * 0.75, y: size.height * 0.6)
+        l1instr.setScale(0.25)
+        l1instr.position = CGPoint(x: size.width * 0.85, y: size.height * 0.6)
         addChild(l1instr)
 
         l2.setScale(1.7)
-        l2.position = CGPoint(x: size.width * 0.25, y: size.height * 0.4)
+        l2.position = CGPoint(x: size.width * 0.5, y: size.height * 0.4)
         addChild(l2)
-        l2instr.setScale(1.7)
-        l2instr.position = CGPoint(x: size.width * 0.75, y: size.height * 0.4)
+        l2instr.setScale(0.25)
+        l2instr.position = CGPoint(x: size.width * 0.85, y: size.height * 0.4)
         addChild(l2instr)
         
         l3.setScale(1.7)
-        l3.position = CGPoint(x: size.width * 0.25, y: size.height * 0.2)
+        l3.position = CGPoint(x: size.width * 0.5, y: size.height * 0.2)
         addChild(l3)
-        l3instr.setScale(1.7)
-        l3instr.position = CGPoint(x: size.width * 0.75, y: size.height * 0.2)
+        l3instr.setScale(0.25)
+        l3instr.position = CGPoint(x: size.width * 0.85, y: size.height * 0.2)
         addChild(l3instr)
         
 //        info.fontColor = SKColor.white
@@ -65,11 +65,11 @@ class MenuScene: SKScene {
 //        info.position = CGPoint(x: size.width / 2, y: size.height * 0.05)
 //        addChild(info)
         
-        music.fontColor = SKColor.white
-        music.text = "Music On/Off"
-        music.fontSize = 20
-        music.position = CGPoint(x: size.width * 0.13, y: size.height * 0.98)
-        addChild(music)
+//        music.fontColor = SKColor.white
+//        music.text = "Music On/Off"
+//        music.fontSize = 20
+//        music.position = CGPoint(x: size.width * 0.13, y: size.height * 0.98)
+//        addChild(music)
 
     }
     

@@ -1,3 +1,4 @@
+
 import Foundation
 import SpriteKit
 
@@ -19,6 +20,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let background_breakfast = SKSpriteNode(imageNamed: "background_breakfast")
     let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
     let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
+    let back = SKSpriteNode(imageNamed: "back_button")
+    let goal_label = SKLabelNode(fontNamed: "Marker Felt")
+    
+
     
     var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
@@ -78,6 +83,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         background_breakfast.zPosition = -1
         addChild(background_breakfast)
         
+        goal_label.text = "Your need 30-45g for breakfast. You have 0!"
+        goal_label.fontSize = 40
+        goal_label.fontColor = SKColor.black
+        goal_label.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
+        goal_label.zPosition = 2.0
+        addChild(goal_label)
+        
         
         //add background music
         let backgroundMusic = SKAudioNode(fileNamed: "GameSounds/BackgroundMusic.wav")
@@ -94,6 +106,11 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         player.physicsBody?.contactTestBitMask = object.food.rawValue
         player.name = "player"
         addChild(player)
+        
+        back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
+        back.zPosition = 1.0
+        back.setScale(0.25)
+        addChild(back)
         
         run(SKAction.repeatForever(
             SKAction.sequence([
@@ -177,7 +194,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         collectionBackground.position = CGPoint(x: frame.midX, y: frame.midY)
         collectionBackground.zPosition = -2.0
         addChild(collectionBackground)
-
+        
     }
     
     // RECOGNIZING TOUCH GESTURES
@@ -214,7 +231,11 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
         
-        if (!gameOver){
+        if(back.contains(touchLocation)) {
+            let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
+            let scene = MenuScene(size: self.size)
+            self.view?.presentScene(scene, transition: reveal)
+        } else if (!gameOver){
             playerTouched = false
             //pause game when player lifts finger
             view?.scene?.isPaused = true
@@ -437,6 +458,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         count_label.text = "CARBS: \(carb_count) g"
                         incrementMeter(carbs: food.carb_count)
                         
+                        if(b_plate) {
+                            goal_label.text = "You need 30-45g for breakfast. You have \(carb_count)!"
+                        } else if(l_plate) {
+                            goal_label.text = "You need 60-75g for lunch. You have \(carb_count)!"
+                        }else if(d_plate) {
+                            goal_label.text = "You need 60-75g for dinner. You have \(carb_count)!"
+                        }
                         
                         
                         if(carb_count>100 && b_plate) {
@@ -454,6 +482,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //set up lunch round
                             l_plate = true
+
                             
                             //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
                             background_lunch.size = self.frame.size
@@ -476,6 +505,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //set up dinner round
                             d_plate = true
+
                             //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
                             background_dinner.size = self.frame.size
                             background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.55)
@@ -556,3 +586,4 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     
 }
+
