@@ -1,4 +1,3 @@
-
 import Foundation
 import SpriteKit
 
@@ -23,7 +22,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let back = SKSpriteNode(imageNamed: "back_button")
     let goal_label = SKLabelNode(fontNamed: "Marker Felt")
     
-
+    
     
     var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
@@ -42,9 +41,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     var done = false
     
-    var goal1 = 100
-    var goal2 = 100
-    var goal3 = 100
+    var goal1 = 45
+    var goal2 = 75
+    var goal3 = 75
     
     //initialize player avatar
     let player = SKSpriteNode(imageNamed: "ram")
@@ -56,6 +55,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     //pause when touch contact ends
     let pauseScreen = SKSpriteNode(imageNamed: "paused_button")
+    let scoreBar = SKLabelNode(fontNamed: "Marker Felt")
     
     // static var backgroundMusic = SKAudioNode(fileNamed: "GameSounds/BackgroundMusic.wav")
     
@@ -70,9 +70,18 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     //meter to keep track of number of carbs per plate
     var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
     
+    //scoring and completion variables
+    var score = 0
+    var bfastMinCarbs = 30
+    var bfastMaxCarbs = 45
+    var lunchMinCarbs = 60
+    var lunchMaxCarbs = 75
+    var dinnerMinCarbs = 60
+    var dinnerMaxCarbs = 75
+    
     //food plate hints labels and background
-    let collectedItemsLabel = SKLabelNode(fontNamed: "Marker Felt")
-    let tipLabel = SKLabelNode(fontNamed: "Marker Felt")
+    let collectedItemsLabel = SKSpriteNode(imageNamed: "foods_on_your_plate")
+    let tipLabel = SKSpriteNode(imageNamed: "try_this_one")
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
     
     override func didMove(to view: SKView) {
@@ -83,7 +92,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         background_breakfast.zPosition = -1
         addChild(background_breakfast)
         
-        goal_label.text = "Your need 30-45g for breakfast. You have 0!"
+        goal_label.text = "You need 30-45g for breakfast. You have 0!"
         goal_label.fontSize = 40
         goal_label.fontColor = SKColor.black
         goal_label.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
@@ -124,6 +133,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         meterFrame.position = CGPoint(x: size.width, y: 50)
         addChild(meterFrame)
         
+        //add score bar
+        scoreBar.fontSize = 30
+        scoreBar.fontColor = SKColor.blue
+        scoreBar.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
+        scoreBar.zPosition = 2.0
+        addChild(scoreBar)
+        
         //add meter
         foodMeter.name = "meter"
         meterFrame.physicsBody = SKPhysicsBody(edgeFrom: CGPoint(x:0, y:100), to: CGPoint(x:size.width, y: 100))
@@ -149,12 +165,6 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         )
         
         
-        count_label.text = "CARBS: \(carb_count) g"
-        count_label.fontSize = 30
-        count_label.fontColor = SKColor.blue
-        count_label.position = CGPoint(x: size.width * 0.9, y: 50)
-        count_label.zPosition = 1.5
-        addChild(count_label)
         
         //add plates to keep track of players progress
         b_empty_plate.position = CGPoint(x: 100, y: 160)
@@ -175,18 +185,12 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         //adding food plate hint scene
         //make z position really small to hide it
         //bring to front only when plate is clicked
-        collectedItemsLabel.fontSize = 100
-        collectedItemsLabel.text = "Collected Items:"
-        collectedItemsLabel.position = CGPoint(x: frame.midX, y: frame.midY + 200)
+        collectedItemsLabel.position = CGPoint(x: frame.midX, y: frame.midY + 300)
         collectedItemsLabel.zPosition = -2.0
-        collectedItemsLabel.fontColor = SKColor.blue
         addChild(collectedItemsLabel)
         
-        tipLabel.fontSize = 100
-        tipLabel.text = "Try this food next:"
-        tipLabel.position = CGPoint(x: frame.midX, y: frame.midY - 100)
+        tipLabel.position = CGPoint(x: frame.midX, y: frame.midY - 80)
         tipLabel.zPosition = -2.0
-        tipLabel.fontColor = SKColor.blue
         addChild(tipLabel)
         
         
@@ -247,9 +251,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 var spacing = 100
                 isOpen = true
                 
-                collectionBackground.zPosition = 2.0
-                collectedItemsLabel.zPosition = 2.5
-                tipLabel.zPosition = 2.5
+                collectionBackground.zPosition = 2.5
+                collectedItemsLabel.zPosition = 3.0
+                tipLabel.zPosition = 3.0
                 
                 for items in collectedItems{
                     print(items.node)
@@ -257,10 +261,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                     let itemCard = items.node
                     let floatSpacing = (CGFloat)(spacing)
                     itemCard.position = CGPoint(x: floatSpacing, y: frame.midY + 100)
-                    itemCard.zPosition = 2.5
+                    itemCard.zPosition = 4.0
                     itemCard.name = "hint"
                     addChild(itemCard)
-                    spacing += 100
+                    spacing += 200
                 }
                 
                 //determine a food to collect next
@@ -305,8 +309,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 
                 let hintCard = food_hint
                 print(hintCard)
-                hintCard.position = CGPoint(x: frame.midX, y: frame.midY - 200)
-                hintCard.zPosition = 2.5
+                hintCard.position = CGPoint(x: frame.midX, y: frame.midY - 250)
+                hintCard.zPosition = 4.0
                 hintCard.name = "hint"
                 addChild(hintCard)
                 
@@ -458,19 +462,12 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         count_label.text = "CARBS: \(carb_count) g"
                         incrementMeter(carbs: food.carb_count)
                         
-                        if(b_plate) {
-                            goal_label.text = "You need 30-45g for breakfast. You have \(carb_count)!"
-                        } else if(l_plate) {
-                            goal_label.text = "You need 60-75g for lunch. You have \(carb_count)!"
-                        }else if(d_plate) {
-                            goal_label.text = "You need 60-75g for dinner. You have \(carb_count)!"
-                        }
                         
-                        
-                        if(carb_count>100 && b_plate) {
+                        if(carb_count>bfastMinCarbs && carb_count<bfastMaxCarbs && b_plate) { //breakfast complete
+                            score += 100
+                            scoreBar.text = "SCORE: \(score)"
                             //reset all parameters to prepare for lunch round
                             carb_count = 0
-                            count_label.text = "CARBS: \(carb_count) g"
                             resetMeter()
                             b_plate = false
                             b_empty_plate.removeFromParent()
@@ -482,7 +479,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //set up lunch round
                             l_plate = true
-
+                            
                             
                             //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
                             background_lunch.size = self.frame.size
@@ -490,10 +487,22 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             //   background_lunch.setScale(1.22)
                             background_lunch.zPosition = -1
                             addChild(background_lunch)
-                        }else if(carb_count>100 && l_plate) {
+                            
+                            
+                            
+                        }else if(carb_count>bfastMaxCarbs && b_plate){
+                            //breakfast overshot
+                            score -= 30
+                            scoreBar.text = "SCORE: \(score)"
+                            //reset count
+                            carb_count = 0
+                            resetMeter()
+                        }else if(carb_count>lunchMinCarbs && carb_count<lunchMaxCarbs && l_plate) {
+                            //lunch complete
+                            score += 100
+                            scoreBar.text = "SCORE: \(score)"
                             //reset all parameters to prepare for dinner round
                             carb_count = 0
-                            count_label.text = "CARBS: \(carb_count) g"
                             resetMeter()
                             l_plate = false
                             l_empty_plate.removeFromParent()
@@ -505,20 +514,46 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //set up dinner round
                             d_plate = true
-
+                            
                             //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
                             background_dinner.size = self.frame.size
                             background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.55)
                             //background_dinner.setScale(1.22)
                             background_dinner.zPosition = -1
                             addChild(background_dinner)
-                        }else if(carb_count>100 && d_plate) {
+                        }else if(carb_count>lunchMaxCarbs && l_plate){
+                            //lunch overshot
+                            score -= 30
+                            scoreBar.text = "SCORE: \(score)"
+                            //reset count
+                            carb_count = 0
+                            resetMeter()
+                        }else if(carb_count>=dinnerMinCarbs && carb_count<=dinnerMaxCarbs && d_plate) {
+                            //dinner complete
+                            score += 100
+                            scoreBar.text = "SCORE: \(score)"
                             d_plate = false
                             d_empty_plate.removeFromParent()
                             d_full_plate.position = CGPoint(x: 300, y: 160)
                             d_full_plate.zPosition = 1.0
                             addChild(d_full_plate)
                             endRound()
+                        }else if(carb_count>=dinnerMaxCarbs && d_plate){
+                            //dinner overshot
+                            score -= 30
+                            scoreBar.text = "SCORE: \(score)"
+                            //reset count
+                            carb_count = 0
+                            resetMeter()
+                        }
+                        
+                        //change goal label once plate has been established 
+                        if(b_plate) {
+                            goal_label.text = "You need 30-45g for breakfast. You have \(carb_count)!"
+                        } else if(l_plate) {
+                            goal_label.text = "You need 60-75g for lunch. You have \(carb_count)!"
+                        }else if(d_plate) {
+                            goal_label.text = "You need 60-75g for dinner. You have \(carb_count)!"
                         }
                     }
                 }
@@ -540,7 +575,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         food_number.text = "\(carbs)"
         food_number.fontSize = 100
         food_number.fontColor = SKColor.green
-        food_number.position = CGPoint(x: frame.midX, y: frame.midY)
+        food_number.position = CGPoint(x: player.position.x, y: player.position.y)
         food_number.zPosition = 1.0
         addChild(food_number)
         
@@ -586,4 +621,3 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     
 }
-
