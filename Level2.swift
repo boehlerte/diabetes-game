@@ -8,13 +8,16 @@ enum object2:UInt32{
 
 class Level2: SKScene, SKPhysicsContactDelegate{
     var gameOver = false
+    
     //hint bar open variable
     var isOpen = false
+    
     //collection of food sprites
     //  var collection = [Foods]()
     var collectedItems = [Foods]()
     var carb_count = 0
-    // TEST COMMENT 1
+    
+    
     let count_label = SKLabelNode(fontNamed: "Marker Felt")
     let background_breakfast = SKSpriteNode(imageNamed: "background_breakfast")
     let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
@@ -22,12 +25,17 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let back = SKSpriteNode(imageNamed: "back_button")
     let goal_label = SKLabelNode(fontNamed: "Marker Felt")
     
+    //goal scene images - breakfast goal, lunch goal, dinner goal
+    //show goals before player starts each plate
+    let b_goal = SKSpriteNode(imageNamed: "breakfast_goal")
+    let l_goal = SKSpriteNode(imageNamed: "lunch_goal")
+    let d_goal = SKSpriteNode(imageNamed: "dinner_goal")
     
     
     var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
     
-    // TEST COMMENT 2
+  
     var l_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var l_full_plate = SKSpriteNode(imageNamed: "full_plate")
     
@@ -85,8 +93,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
     
     override func didMove(to view: SKView) {
-        
-        
+               
         background_breakfast.size = self.frame.size
         background_breakfast.position = CGPoint(x: size.width/2, y: size.height * 0.55)
         background_breakfast.zPosition = -1
@@ -121,6 +128,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         back.setScale(0.25)
         addChild(back)
         
+        //add food to scene
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
@@ -137,7 +145,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         scoreBar.fontSize = 30
         scoreBar.fontColor = SKColor.blue
         scoreBar.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
-        scoreBar.zPosition = 2.0
+        scoreBar.zPosition = 2.5
         addChild(scoreBar)
         
         //add meter
@@ -164,6 +172,18 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             SKAction.fadeOut(withDuration: 0.5)
         )
         
+//        //goal icons
+//        b_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+//        b_goal.zPosition = 3.0
+//        l_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+//        l_goal.zPosition = -5.0
+//        d_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+//        d_goal.zPosition = -5.0
+//        
+//        //breakfast goal screen
+//        addChild(b_goal)
+//        addChild(l_goal)
+//        addChild(d_goal)
         
         
         //add plates to keep track of players progress
@@ -199,11 +219,17 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         collectionBackground.zPosition = -2.0
         addChild(collectionBackground)
         
+       
+        
+        
+        
     }
     
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+       
+        
         if (!gameOver){
             playerTouched = true
             //play game when player puts down finger
@@ -235,6 +261,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
         
+        
         if(back.contains(touchLocation)) {
             let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
             let scene = MenuScene(size: self.size)
@@ -246,77 +273,21 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             addChild(pauseScreen)
             
             
-            
             if (!isOpen && (b_empty_plate.contains(touchLocation) || l_empty_plate.contains(touchLocation) || d_empty_plate.contains(touchLocation))){
-                var spacing = 100
+                
                 isOpen = true
                 
-                collectionBackground.zPosition = 2.5
-                collectedItemsLabel.zPosition = 3.0
                 tipLabel.zPosition = 3.0
                 
-                for items in collectedItems{
-                    print(items.node)
-                    //show already collected items
-                    let itemCard = items.node
-                    let floatSpacing = (CGFloat)(spacing)
-                    itemCard.position = CGPoint(x: floatSpacing, y: frame.midY + 100)
-                    itemCard.zPosition = 4.0
-                    itemCard.name = "hint"
-                    addChild(itemCard)
-                    spacing += 200
-                }
+               //show already collected items
+                showCollectedItems()
                 
                 //determine a food to collect next
-                var food_hint = Foods.collection[0].node.copy() as! SKSpriteNode
-                if (b_plate){
-                    let carbs_allowed = goal1 - carb_count
-                    
-                    done = false
-                    while(!done) {
-                        let randd = Int(arc4random_uniform(43))
-                        // random number casted as int to pick food to show
-                        if(b_plate && Foods.collection[randd].b && Foods.collection[randd].carb_count <= carbs_allowed) {
-                            food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
-                            done = true
-                        }
-                    }
-                } else if (l_plate){
-                    let carbs_allowed = goal2 - carb_count
-                    
-                    done = false
-                    while(!done) {
-                        let randd = Int(arc4random_uniform(43))
-                        // random number casted as int to pick food to show
-                        if(Foods.collection[randd].l && Foods.collection[randd].carb_count <= carbs_allowed) {
-                            food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
-                            done = true
-                        }
-                    }
-                } else if (d_plate){
-                    let carbs_allowed = goal3 - carb_count
-                    
-                    done = false
-                    while(!done) {
-                        let randd = Int(arc4random_uniform(43))
-                        // random number casted as int to pick food to show
-                        if(Foods.collection[randd].d && Foods.collection[randd].carb_count <= carbs_allowed) {
-                            food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
-                            done = true
-                        }
-                    }
-                }
-                
-                let hintCard = food_hint
-                print(hintCard)
-                hintCard.position = CGPoint(x: frame.midX, y: frame.midY - 250)
-                hintCard.zPosition = 4.0
-                hintCard.name = "hint"
-                addChild(hintCard)
+                showHintItem()
                 
                 
                 
-            }else if(isOpen &&  collectionBackground.contains(touchLocation)){
+            }else if(collectionBackground.contains(touchLocation)){
                 isOpen = false
                 for child in self.children {
                     if child.name == "hint" {
@@ -326,8 +297,6 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 collectionBackground.zPosition = -2.0
                 collectedItemsLabel.zPosition = -2.0
                 tipLabel.zPosition = -2.0
-                
-                
             }
             
         }else{
@@ -463,9 +432,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         incrementMeter(carbs: food.carb_count)
                         
                         
-                        if(carb_count>bfastMinCarbs && carb_count<bfastMaxCarbs && b_plate) { //breakfast complete
+                        if(carb_count>bfastMinCarbs && carb_count<bfastMaxCarbs && b_plate) {
+                            //breakfast complete
+                            
+                            view?.scene?.isPaused = true
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
+                            
+                            //show collected items
+                            showCollectedItems()
+                            
                             //reset all parameters to prepare for lunch round
                             carb_count = 0
                             resetMeter()
@@ -479,8 +455,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //set up lunch round
                             l_plate = true
-                            
-                            
+//                            //add l_goal to scene
+//                            l_goal.zPosition = 3.0
+//                            
                             //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
                             background_lunch.size = self.frame.size
                             background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
@@ -496,11 +473,17 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             scoreBar.text = "SCORE: \(score)"
                             //reset count
                             carb_count = 0
+                            collectedItems.removeAll()
                             resetMeter()
                         }else if(carb_count>lunchMinCarbs && carb_count<lunchMaxCarbs && l_plate) {
+                            view?.scene?.isPaused = true
                             //lunch complete
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
+                            
+                            //show all collected items before moving on to next plate
+                            showCollectedItems()
+                            
                             //reset all parameters to prepare for dinner round
                             carb_count = 0
                             resetMeter()
@@ -515,6 +498,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             //set up dinner round
                             d_plate = true
                             
+//                            //add d_goal to scene
+//                            d_goal.zPosition = 3.0
+                            
+                            
                             //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
                             background_dinner.size = self.frame.size
                             background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.55)
@@ -527,23 +514,30 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             scoreBar.text = "SCORE: \(score)"
                             //reset count
                             carb_count = 0
+                            collectedItems.removeAll()
                             resetMeter()
                         }else if(carb_count>=dinnerMinCarbs && carb_count<=dinnerMaxCarbs && d_plate) {
                             //dinner complete
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
+                            
+                            //show all collected items
+                            showCollectedItems()
+                            
                             d_plate = false
                             d_empty_plate.removeFromParent()
                             d_full_plate.position = CGPoint(x: 300, y: 160)
                             d_full_plate.zPosition = 1.0
                             addChild(d_full_plate)
                             endRound()
+                            
                         }else if(carb_count>=dinnerMaxCarbs && d_plate){
                             //dinner overshot
                             score -= 30
                             scoreBar.text = "SCORE: \(score)"
                             //reset count
                             carb_count = 0
+                            collectedItems.removeAll()
                             resetMeter()
                         }
                         
@@ -583,6 +577,89 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         let fade = SKAction.fadeOut(withDuration: 0.2)
         let sequence = SKAction.sequence([scaleUp, fade])
         food_number.run(sequence)
+    }
+    
+    //show collected items after each plate
+    func showCollectedItems(){
+        
+        //show collected items before moving on to next plate
+        var spacing = 100
+        collectionBackground.zPosition = 2.5
+        collectedItemsLabel.zPosition = 3.0
+        
+        for items in collectedItems{
+            print(items.node)
+            //show already collected items
+            let itemCard = items.node
+            let floatSpacing = (CGFloat)(spacing)
+            itemCard.position = CGPoint(x: floatSpacing, y: frame.midY + 100)
+            itemCard.zPosition = 4.0
+            itemCard.name = "hint"
+            addChild(itemCard)
+            spacing += 200
+        }
+
+    }
+    
+    //determine a random item that keeps player in carb range - show hint
+    func showHintItem(){
+        var food_hint = Foods.collection[0].node.copy() as! SKSpriteNode
+        if (b_plate){
+            let carbs_allowed = goal1 - carb_count
+            
+            done = false
+            while(!done) {
+                let randd = Int(arc4random_uniform(43))
+                // random number casted as int to pick food to show
+                if(Foods.collection[randd].b && Foods.collection[randd].carb_count <= carbs_allowed) {
+                    food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
+                    for item in collectedItems {
+                        if(food_hint.texture != item.node.texture){
+                              done = true
+                        }
+                    }
+                }
+            }
+        } else if (l_plate){
+            let carbs_allowed = goal2 - carb_count
+            
+            done = false
+            while(!done) {
+                let randd = Int(arc4random_uniform(43))
+                // random number casted as int to pick food to show
+                if(Foods.collection[randd].l && Foods.collection[randd].carb_count <= carbs_allowed) {
+                    food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
+                    for item in collectedItems {
+                        if(food_hint.texture != item.node.texture){
+                            done = true
+                        }
+                    }
+                }
+            }
+        } else if (d_plate){
+            let carbs_allowed = goal3 - carb_count
+            
+            done = false
+            while(!done) {
+                let randd = Int(arc4random_uniform(43))
+                // random number casted as int to pick food to show
+                if(Foods.collection[randd].d && Foods.collection[randd].carb_count <= carbs_allowed) {
+                    food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
+                    for item in collectedItems {
+                        if(food_hint.texture != item.node.texture){
+                            done = true
+                        }
+                    }
+                }
+            }
+        }
+        
+        let hintCard = food_hint
+        print(hintCard)
+        hintCard.position = CGPoint(x: frame.midX, y: frame.midY - 250)
+        hintCard.zPosition = 4.0
+        hintCard.name = "hint"
+        addChild(hintCard)
     }
     
     
