@@ -16,11 +16,11 @@ class RoundSelect: SKScene {
 
     static var round = 0
     
-    let r1 = SKSpriteNode(imageNamed: "1")
-    let r2 = SKSpriteNode(imageNamed: "2")
-    let r3 = SKSpriteNode(imageNamed: "3")
-    let r4 = SKSpriteNode(imageNamed: "4")
-    let r5 = SKSpriteNode(imageNamed: "5")
+    let r1 = SKSpriteNode(imageNamed: "1_button")
+    let r2 = SKSpriteNode(imageNamed: "2_button")
+    let r3 = SKSpriteNode(imageNamed: "3_button")
+    let r4 = SKSpriteNode(imageNamed: "4_button")
+    let r5 = SKSpriteNode(imageNamed: "5_button")
     let round_sel = SKSpriteNode(imageNamed: "pick_a_round_button")
     let bg = SKSpriteNode(imageNamed: "blue_screen")
     let back = SKSpriteNode(imageNamed: "back_button")
@@ -60,7 +60,6 @@ class RoundSelect: SKScene {
         r5.position = CGPoint(x: size.width * 5/6, y: size.height * 0.5)
         addChild(r5)
         
-    
     }
     
     
@@ -73,8 +72,8 @@ class RoundSelect: SKScene {
         let touchLocation = touch!.location(in: self)
         if(back.contains(touchLocation)) {
             let reveal = SKTransition.flipVertical(withDuration: 3)
-            let scene = MenuScene(size: self.size)
-            self.view?.presentScene(scene, transition: reveal)
+            let scenes = MenuScene(size: self.size)
+            self.view?.presentScene(scenes, transition: reveal)
         }
         
         // change round variable depending on which was chosen
