@@ -21,7 +21,6 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var interval = 1
     
     var hat = SKSpriteNode(imageNamed: "chef_hat")
-    let count_label = SKLabelNode(fontNamed: "Marker Felt")
     let feedback = UILabel()
     let background_breakfast = SKSpriteNode(imageNamed: "background_breakfast")
     let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
@@ -73,6 +72,10 @@ class Level3: SKScene, SKPhysicsContactDelegate{
 
     
     override func didMove(to view: SKView) {
+        
+        feedback.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: Selector(("tapFunction:")))
+        feedback.addGestureRecognizer(tap)
         
         
         background_breakfast.size = self.frame.size
@@ -126,14 +129,6 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             SKAction.fadeOut(withDuration: 0.5)
         )
         
-        
-        count_label.text = "CARBS: \(count) g"
-        count_label.fontSize = 30
-        count_label.fontColor = SKColor.blue
-        count_label.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
-        count_label.zPosition = 1.0
-        addChild(count_label)
-        
         feedback.textColor = .black
 //        feedback.fontSize = 40
 //        feedback.position = CGPoint(x: size.width * 0.5, y: size.height * 0.2)
@@ -176,6 +171,9 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             let scene = MenuScene(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
         }
+//        if(feedback.contains(touchLocation)) {
+//            feedback.isHidden = true
+//        }
         else if (!gameOver){
             playerTouched = false
             //pause game when player lifts finger
@@ -308,15 +306,18 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 } else  {
                     feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(count)!"
                 }
-                self.view?.addSubview(feedback)
+                //feedback.isHidden = false
+                // self.view?.addSubview(feedback)
+                
+
                 //addChild(feedback)
                 //SKAction.wait(forDuration: 5)
-                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4), execute: {
-                    // Put your code which should be executed with a delay here
-                        //self.feedback.removeFromParent()
-                    self.view?.willRemoveSubview(feedback)
-                    self.view?.scene?.isPaused = false
-                })
+//                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(4), execute: {
+//                    // Put your code which should be executed with a delay here
+//                        //self.feedback.removeFromParent()
+//                    self.view?.willRemoveSubview(feedback)
+//                    self.view?.scene?.isPaused = false
+//                })
                 
                 //set up lunch round
                 b_plate = false
@@ -352,41 +353,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 }else{
                     playSound(sound: bad_carb)
                     count += food.carb_count
-                    count_label.text = "CARBS: \(count) g"
-        
-         /*
-                    if(count>100 && b_plate) {
-                        //reset all parameters to prepare for lunch round
-                        count = 0
-                        count_label.text = "CARBS: \(count) g"
-                        background_breakfast.removeFromParent()
-                        collectedItems.removeAll()
-                        
-                        //set up lunch round
-                        background_lunch.size = self.frame.size
-                        background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.5)
-                        background_lunch.zPosition = -1
-                        addChild(background_lunch)
-                        
-                    }else if(count>100 && l_plate) {
-                        //reset all parameters to prepare for dinner round
-                        count = 0
-                        count_label.text = "CARBS: \(count) g"
-                        background_lunch.removeFromParent()
-                        collectedItems.removeAll()
-                        
-                        //set up dinner round
-                        background_dinner.size = self.frame.size
-                        background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.5)
-                        background_dinner.zPosition = -1
-                        addChild(background_dinner)
-                        
-                    }else if(count>100 && d_plate) {
-                        endRound()
-                    }
-                 */
-                    
-                    
+    
                 }
             }
         }
@@ -412,6 +379,10 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         let fade = SKAction.fadeOut(withDuration: 0.2)
         let sequence = SKAction.sequence([scaleUp, fade])
         food_number.run(sequence)
+    }
+    
+    func tapFunction(sender:UITapGestureRecognizer) {
+        feedback.isHidden = true
     }
     
     

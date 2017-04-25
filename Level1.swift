@@ -21,7 +21,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     let back = SKSpriteNode(imageNamed: "back_button")
     
     //pause when touch contact ends
-    let pauseScreen = SKLabelNode(fontNamed: "Chalkduster")
+    let pauseScreen = SKSpriteNode(imageNamed: "paused_button")
     
     let scoreBar = SKLabelNode(fontNamed: "Marker Felt")
     let streakStar = SKSpriteNode(imageNamed: "star")
@@ -105,9 +105,6 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         addChild(foodMeter)
         
         //create pause screen attributes - add pause screen when touch contact ends
-        pauseScreen.text = "PAUSED"
-        pauseScreen.fontSize = 150
-        pauseScreen.fontColor = SKColor.black
         pauseScreen.position = CGPoint(x: frame.midX, y: frame.midY)
         pauseScreen.zPosition = 1.0
         
@@ -294,7 +291,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
                 }else{
                     playSound(sound: bad_carb)
                     let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
-                    retryScreen.position = CGPoint(x: frame.midX, y: frame.midY)
+                    retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                     retryScreen.zPosition = 1.0
                     addChild(retryScreen)
                     retryScreen.run(

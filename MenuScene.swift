@@ -17,9 +17,11 @@ class MenuScene: SKScene {
     var l1 = SKSpriteNode(imageNamed: "level_1_button")
     var l2 = SKSpriteNode(imageNamed: "level_2_button")
     var l3 = SKSpriteNode(imageNamed: "level_3_button")
-    let bg = SKSpriteNode(imageNamed: "menu_background")
-    let l1_howto1 = SKSpriteNode(imageNamed: "l1_instr")
-
+    let bg = SKSpriteNode(imageNamed: "blue_screen")
+    let logo = SKSpriteNode(imageNamed: "large_logo")
+    let l1_howto = SKSpriteNode(imageNamed: "l1_instr")
+    let l2_howto = SKSpriteNode(imageNamed: "l1_instr")
+    let l3_howto = SKSpriteNode(imageNamed: "l1_instr")
 
     static var level = 0
 
@@ -37,6 +39,11 @@ class MenuScene: SKScene {
     
     override init(size: CGSize) {
         super.init(size: size)
+        
+        logo.setScale(0.7)
+        logo.position = CGPoint(x: size.width * 0.5, y: size.height * 0.8)
+        logo.zPosition = 1
+        addChild(logo)
 
         l1.setScale(1.7)
         l1.position = CGPoint(x: size.width * 0.5, y: size.height * 0.6)
@@ -59,18 +66,6 @@ class MenuScene: SKScene {
         l3instr.position = CGPoint(x: size.width * 0.85, y: size.height * 0.2)
         addChild(l3instr)
         
-//        info.fontColor = SKColor.white
-//        info.text = "Info Tab"
-//        info.fontSize = 50
-//        info.position = CGPoint(x: size.width / 2, y: size.height * 0.05)
-//        addChild(info)
-        
-//        music.fontColor = SKColor.white
-//        music.text = "Music On/Off"
-//        music.fontSize = 20
-//        music.position = CGPoint(x: size.width * 0.13, y: size.height * 0.98)
-//        addChild(music)
-
     }
     
     
@@ -96,16 +91,22 @@ class MenuScene: SKScene {
         // instruction buttons
         if l1instr.contains(touchLocation) {
             // if instruction button clicked
-            l1_howto1.setScale(0.5)
-            l1_howto1.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
-            l1_howto1.zPosition=1
-            addChild(l1_howto1)
+            l1_howto.setScale(0.5)
+            l1_howto.position = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+            l1_howto.zPosition=1
+            addChild(l1_howto)
         }
-        else if l1_howto1.contains(touchLocation) {
+        else if l1_howto.contains(touchLocation) {
             // if first instr page clicked
-                l1_howto1.removeFromParent()
-                //l1_howto1.zPosition = -2
-
+                l1_howto.removeFromParent()
+        }
+        else if l2_howto.contains(touchLocation) {
+            // if second instr page clicked
+            l2_howto.removeFromParent()
+        }
+        else if l3_howto.contains(touchLocation) {
+            // if third instr page clicked
+            l3_howto.removeFromParent()
         }
 
     }
