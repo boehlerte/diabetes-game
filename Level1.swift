@@ -70,7 +70,8 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         back.zPosition = 1.0
         back.setScale(0.25)
         addChild(back)
-        
+        var seconds = CGFloat(1.0)
+
         // change non-carb goal depending on round selected
         if(RoundSelect.round==1) {
             goal = 5
@@ -82,12 +83,13 @@ class Level1: SKScene, SKPhysicsContactDelegate{
             goal = 20
         } else if(RoundSelect.round==5) {
             goal = 20
+            seconds = CGFloat(0.5)
         }
 
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
-                SKAction.wait(forDuration: 0.5) // was 1
+                SKAction.wait(forDuration: TimeInterval(seconds)) // was 1
                 ])
         ))
         
