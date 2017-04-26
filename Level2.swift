@@ -1,3 +1,4 @@
+
 import Foundation
 import SpriteKit
 
@@ -31,7 +32,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
     
-  
+    
     var l_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var l_full_plate = SKSpriteNode(imageNamed: "full_plate")
     
@@ -48,6 +49,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var goal1 = 45
     var goal2 = 75
     var goal3 = 75
+    var seconds = CGFloat(1.0)
+
     
     //initialize player avatar
     let player = SKSpriteNode(imageNamed: "ram")
@@ -89,7 +92,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
     
     override func didMove(to view: SKView) {
-               
+        
         background_breakfast.size = self.frame.size
         background_breakfast.position = CGPoint(x: size.width/2, y: size.height * 0.55)
         background_breakfast.zPosition = -1
@@ -124,11 +127,24 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         back.setScale(0.25)
         addChild(back)
         
+        
+        if(RoundSelect.round==1) {
+            seconds = CGFloat(1.0)
+        } else if(RoundSelect.round==2) {
+            seconds = CGFloat(0.9)
+        } else if(RoundSelect.round==3) {
+            seconds = CGFloat(0.8)
+        } else if(RoundSelect.round==4) {
+            seconds = CGFloat(0.7)
+        } else if(RoundSelect.round==5) {
+            seconds = CGFloat(0.6)
+        }
+        
         //add food to scene
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
-                SKAction.wait(forDuration: 1.0)
+                SKAction.wait(forDuration: TimeInterval(seconds))
                 ])
         ))
         
@@ -168,20 +184,20 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             SKAction.fadeOut(withDuration: 0.5)
         )
         
-
-//        //goal icons
-//        b_goal.position = CGPoint(x: frame.midX, y: frame.midY)
-//        b_goal.zPosition = 3.0
-//        l_goal.position = CGPoint(x: frame.midX, y: frame.midY)
-//        l_goal.zPosition = -5.0
-//        d_goal.position = CGPoint(x: frame.midX, y: frame.midY)
-//        d_goal.zPosition = -5.0
-//        
-//        //breakfast goal screen
-//        addChild(b_goal)
-//        addChild(l_goal)
-//        addChild(d_goal)
-
+        
+        //        //goal icons
+        //        b_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+        //        b_goal.zPosition = 3.0
+        //        l_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+        //        l_goal.zPosition = -5.0
+        //        d_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+        //        d_goal.zPosition = -5.0
+        //
+        //        //breakfast goal screen
+        //        addChild(b_goal)
+        //        addChild(l_goal)
+        //        addChild(d_goal)
+        
         //add plates to keep track of players progress
         b_empty_plate.position = CGPoint(x: 100, y: 160)
         b_empty_plate.zPosition = 1.5
@@ -215,7 +231,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         collectionBackground.zPosition = -2.0
         addChild(collectionBackground)
         
-       
+        
         
         
         
@@ -224,7 +240,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-       
+        
         
         if (!gameOver){
             playerTouched = true
@@ -275,7 +291,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 
                 tipLabel.zPosition = 3.0
                 
-               //show already collected items
+                //show already collected items
                 showCollectedItems()
                 
                 //determine a food to collect next
@@ -401,6 +417,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 for item in collectedItems {                                            //look at all collected foods
                     if(food.node.texture == item.node.texture){                         //if food has been collected
                         duplicate = true
+                        playSound(sound: bad_carb)
                         print("duplicate item")                                         //it is a duplicate!
                         let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
                         retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
@@ -418,17 +435,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                     
                     //add food to collectedItems
                     collectedItems.append(food)
-                    
+                    playSound(sound: good_carb)
 
-                    
-                    if(!food.carb){
-                        playSound(sound: good_carb)
-                        
-                    }else{
+                    if(food.carb){
                         playSound(sound: bad_carb)
                         carb_count += food.carb_count
                         incrementMeter(carbs: food.carb_count)
-                                                
+                        
                         if(carb_count>bfastMinCarbs && carb_count<bfastMaxCarbs && b_plate) {
                             //breakfast complete
                             
@@ -452,11 +465,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //set up lunch round
                             l_plate = true
-
-//                            //add l_goal to scene
-//                            l_goal.zPosition = 3.0
-//                            
-                            //let background_lunch = SKSpriteNode(imageNamed: "background_lunch")
+                            
+                            //                            //add l_goal to scene
+                            //                            l_goal.zPosition = 3.0
+                            //
                             background_lunch.size = self.frame.size
                             background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
                             background_lunch.zPosition = -1
@@ -494,10 +506,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //set up dinner round
                             d_plate = true
-
                             
-//                            //add d_goal to scene
-//                            d_goal.zPosition = 3.0
+                            
+                            //                            //add d_goal to scene
+                            //                            d_goal.zPosition = 3.0
                             
                             
                             //let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
@@ -538,7 +550,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             resetMeter()
                         }
                         
-                        //change goal label once plate has been established 
+                        //change goal label once plate has been established
                         if(b_plate) {
                             goal_label.text = "You need 30-45g for breakfast. You have \(carb_count)!"
                         } else if(l_plate) {
@@ -601,7 +613,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             addChild(itemCard)
             spacing += 200
         }
-
+        
     }
     
     //determine a random item that keeps player in carb range - show hint
@@ -618,7 +630,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                     food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
                     for item in collectedItems {
                         if(food_hint.texture != item.node.texture){
-                              done = true
+                            done = true
                         }
                     }
                 }
