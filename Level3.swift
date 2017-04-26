@@ -20,6 +20,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var count = 0
     var interval = 1
     var complete = false
+    var feedbackshown = false
     
     var hat = SKSpriteNode(imageNamed: "chef_hat")
     let feedback = UILabel()
@@ -147,7 +148,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-        if (!gameOver){
+        if (!gameOver && !feedbackshown){
             playerTouched = true
             //play game when player puts down finger
             view?.scene?.isPaused = false
@@ -157,7 +158,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 playerLocation = touch.location(in: self)
             }
             
-        }else{
+        }else if (gameOver){
             let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
             let scene = RoundSelect(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
@@ -181,7 +182,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             self.view?.presentScene(scene, transition: reveal)
         }
 
-        else if (!gameOver){
+        else if (!gameOver && !feedbackshown){
             playerTouched = false
             //pause game when player lifts finger
             view?.scene?.isPaused = true
@@ -189,7 +190,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             
         } else {
         
-            if (successScreen).contains(touchLocation) {
+            if ((successScreen).contains(touchLocation) && !feedbackshown) {
                 let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
                 let scene = RoundSelect(size: self.size)
                 self.view?.presentScene(scene, transition: reveal)
@@ -299,12 +300,14 @@ class Level3: SKScene, SKPhysicsContactDelegate{
 
             let feedback = UILabel(frame: CGRect(x: 0, y: 0, width: 700, height: 500))
             feedback.center = CGPoint(x: size.width * 0.5, y: size.height/2)
-            feedback.backgroundColor = UIColor.gray
+            feedback.backgroundColor = UIColor.init(red: 0.09, green: 0.09, blue: 0.44, alpha: 1.0)
             feedback.textAlignment = .center
             feedback.numberOfLines = 5
-            feedback.textColor = .black
+            feedback.textColor = .lightText
             feedback.numberOfLines = 5 // for example
             feedback.font = feedback.font.withSize(50)
+            feedback.layer.masksToBounds = true
+            feedback.layer.cornerRadius = 50
             
             if (b_plate) {
                 view?.scene?.isPaused = true
@@ -318,6 +321,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     l_plate = true
                     background_lunch.size = self.frame.size
                     background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.5)
+                    background_breakfast.zPosition = -2
                     background_lunch.zPosition = -1
                     addChild(background_lunch)
                     count = 0
@@ -327,10 +331,12 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     count = 0
                 }
                 self.view?.addSubview(feedback)
+                self.feedbackshown = true
                 self.view?.bringSubview(toFront: feedback)
                 let when = DispatchTime.now() + 5 // delay
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
+                    self.feedbackshown = false
                 }
             } else if (l_plate) {
                 view?.scene?.isPaused = true
@@ -344,6 +350,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     d_plate = true
                     background_dinner.size = self.frame.size
                     background_dinner.position = CGPoint(x: size.width/2, y: size.height * 0.5)
+                    background_lunch.zPosition = -2
                     background_dinner.zPosition = -1
                     addChild(background_dinner)
                     count = 0
@@ -352,10 +359,13 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     count = 0
                 }
                 self.view?.addSubview(feedback)
+                self.feedbackshown = true
                 self.view?.bringSubview(toFront: feedback)
                 let when = DispatchTime.now() + 5 // delay
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
+                    self.feedbackshown = false
+
                 }
 
             } else if (d_plate) {
@@ -372,10 +382,12 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     count = 0
                 }
                 self.view?.addSubview(feedback)
+                self.feedbackshown = true
                 self.view?.bringSubview(toFront: feedback)
                 let when = DispatchTime.now() + 5 // delay
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
+                    self.feedbackshown = false
                 }
                 if(complete) {
                     endRound()
@@ -427,8 +439,12 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         food_number.text = "\(carbs)"
         food_number.fontSize = 100
         food_number.fontColor = SKColor.green
-        food_number.position = CGPoint(x: frame.midX, y: frame.midY)
+        food_number.position = CGPoint(x: player.position.x, y: player.position.y)
         food_number.zPosition = 1.0
+        food_number.fontColor = .darkText
+        if(d_plate) {
+            food_number.fontColor = .lightText
+        }
         addChild(food_number)
         
         let scaleUp = SKAction.scale(to: 2.0, duration: 0.2)
