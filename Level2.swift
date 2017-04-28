@@ -50,7 +50,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var goal2 = 75
     var goal3 = 75
     var seconds = CGFloat(1.0)
-
+    
     
     //initialize player avatar
     let player = SKSpriteNode(imageNamed: "ram")
@@ -240,7 +240,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-        
+        let touch = touches.first
+        let touchLocation = touch!.location(in: self)
+
         
         if (!gameOver){
             playerTouched = true
@@ -251,6 +253,19 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             for touch in touches {
                 playerLocation = touch.location(in: self)
             }
+            
+            if(collectionBackground.contains(touchLocation)){
+                isOpen = false
+                for child in self.children {
+                    if child.name == "hint" {
+                        child.removeFromParent()
+                    }
+                }
+                collectionBackground.zPosition = -2.0
+                collectedItemsLabel.zPosition = -2.0
+                tipLabel.zPosition = -2.0
+            }
+
             
         }else{
             
@@ -299,18 +314,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 
                 
                 
-            }else if(collectionBackground.contains(touchLocation)){
-                isOpen = false
-                for child in self.children {
-                    if child.name == "hint" {
-                        child.removeFromParent()
-                    }
-                }
-                collectionBackground.zPosition = -2.0
-                collectedItemsLabel.zPosition = -2.0
-                tipLabel.zPosition = -2.0
             }
-            
         }else{
             
             if (successScreen).contains(touchLocation) {
@@ -436,7 +440,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                     //add food to collectedItems
                     collectedItems.append(food)
                     playSound(sound: good_carb)
-
+                    
                     if(food.carb){
                         playSound(sound: bad_carb)
                         carb_count += food.carb_count
