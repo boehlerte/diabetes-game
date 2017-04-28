@@ -102,6 +102,22 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         player.name = "player"
         addChild(player)
         
+        //add plates to keep track of players progress
+        b_empty_plate.position = CGPoint(x: 100, y: 160)
+        b_empty_plate.zPosition = 1.5
+        b_empty_plate.name = "b_plate"
+        addChild(b_empty_plate)
+        
+        l_empty_plate.position = CGPoint(x: 200, y: 160)
+        l_empty_plate.zPosition = 1.5
+        l_empty_plate.name = "l_plate"
+        addChild(l_empty_plate)
+        
+        d_empty_plate.position = CGPoint(x: 300, y: 160)
+        d_empty_plate.zPosition = 1.5
+        d_empty_plate.name = "d_plate"
+        addChild(d_empty_plate)
+        
         back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
         back.zPosition = 1.0
         back.setScale(0.25)
@@ -325,6 +341,10 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     background_lunch.zPosition = -1
                     addChild(background_lunch)
                     count = 0
+                    b_empty_plate.removeFromParent()
+                    b_full_plate.position = CGPoint(x: 100, y: 160)
+                    b_full_plate.zPosition = 1.0
+                    addChild(b_full_plate)
 
                 } else  {
                     feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(count)!"
@@ -354,6 +374,10 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     background_dinner.zPosition = -1
                     addChild(background_dinner)
                     count = 0
+                    l_empty_plate.removeFromParent()
+                    l_full_plate.position = CGPoint(x: 300, y: 160)
+                    l_full_plate.zPosition = 1.0
+                    addChild(l_full_plate)
                 } else  {
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for lunch, but you picked up \(count)!"
                     count = 0
@@ -376,6 +400,10 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 } else if(count >= ld_goal1 && count <= ld_goal2) {
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     count = 0
+                    d_empty_plate.removeFromParent()
+                    d_full_plate.position = CGPoint(x: 300, y: 160)
+                    d_full_plate.zPosition = 1.0
+                    addChild(d_full_plate)
                     complete = true
                 } else  {
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for dinner, but you picked up \(count)!"
@@ -451,10 +479,6 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         let fade = SKAction.fadeOut(withDuration: 0.2)
         let sequence = SKAction.sequence([scaleUp, fade])
         food_number.run(sequence)
-    }
-    
-    func tapFunction(sender:UITapGestureRecognizer) {
-        feedback.isHidden = true
     }
     
     
