@@ -5,6 +5,7 @@ import SpriteKit
 enum object2:UInt32{
     case food = 1
     case player = 2
+    case gameBoundary = 3
 }
 
 class Level2: SKScene, SKPhysicsContactDelegate{
@@ -12,6 +13,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     //hint bar open variable
     var isOpen = false
+    
+    
     
     //collection of food sprites
     var collectedItems = [Foods]()
@@ -122,6 +125,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         player.name = "player"
         addChild(player)
         
+//        //game border - keeps player sprite within boundaries
+//        let gameBoundary = SKShapeNode(rectOf: CGSize(width: self.frame.width, height: 100))
+//        gameBoundary.lineWidth = 10
+//        gameBoundary.strokeColor = SKColor.black
+//        gameBoundary.position = CGPoint(x: size.width / 2, y: 50)
+//        gameBoundary.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width, height: 100))
+//        gameBoundary.physicsBody?.categoryBitMask = object2.gameBoundary.rawValue
+//        gameBoundary.physicsBody?.collisionBitMask = object.player.rawValue
+//        addChild(gameBoundary)
+//        
         back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
         back.zPosition = 1.0
         back.setScale(0.25)
@@ -185,18 +198,19 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         )
         
         
-        //        //goal icons
-        //        b_goal.position = CGPoint(x: frame.midX, y: frame.midY)
-        //        b_goal.zPosition = 3.0
-        //        l_goal.position = CGPoint(x: frame.midX, y: frame.midY)
-        //        l_goal.zPosition = -5.0
-        //        d_goal.position = CGPoint(x: frame.midX, y: frame.midY)
-        //        d_goal.zPosition = -5.0
-        //
-        //        //breakfast goal screen
-        //        addChild(b_goal)
-        //        addChild(l_goal)
-        //        addChild(d_goal)
+        //goal icons
+        b_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+        b_goal.zPosition = 3.0
+        b_goal.setScale(0.5)
+        l_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+        l_goal.zPosition = -5.0
+        l_goal.setScale(0.5)
+        d_goal.position = CGPoint(x: frame.midX, y: frame.midY)
+        d_goal.zPosition = -5.0
+        d_goal.setScale(0.5)
+        
+        //breakfast goal screen
+        //addChild(b_goal)
         
         //add plates to keep track of players progress
         b_empty_plate.position = CGPoint(x: 100, y: 160)
@@ -300,7 +314,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             addChild(pauseScreen)
             
             
-            if (!isOpen && (b_empty_plate.contains(touchLocation) || l_empty_plate.contains(touchLocation) || d_empty_plate.contains(touchLocation))){
+            if (!isOpen && (b_empty_plate.contains(touchLocation) || l_empty_plate.contains(touchLocation) || d_empty_plate.contains(touchLocation)) && collectedItems.count > 0){
                 
                 isOpen = true
                 
@@ -455,6 +469,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //show collected items
                             showCollectedItems()
+                           
                             
                             //reset all parameters to prepare for lunch round
                             carb_count = 0
@@ -600,12 +615,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     //show collected items after each plate
     func showCollectedItems(){
-        
-        //show collected items before moving on to next plate
-        var spacing = 100
-        collectionBackground.zPosition = 2.5
+       var spacing = 100
+        collectionBackground.zPosition = 2.6
         collectedItemsLabel.zPosition = 3.0
-        
+       
+            
+        //show collected items before moving on to next plate
+
         for items in collectedItems{
             print(items.node)
             //show already collected items
@@ -617,6 +633,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             addChild(itemCard)
             spacing += 200
         }
+        
         
     }
     
