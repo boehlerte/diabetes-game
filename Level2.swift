@@ -14,7 +14,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     //hint bar open variable
     var isOpen = false
     
-    
+    //variable to alternate between colors used for carbCountAlert
+    var alternateNum = 0
     
     //collection of food sprites
     var collectedItems = [Foods]()
@@ -125,16 +126,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         player.name = "player"
         addChild(player)
         
-//        //game border - keeps player sprite within boundaries
-//        let gameBoundary = SKShapeNode(rectOf: CGSize(width: self.frame.width, height: 100))
-//        gameBoundary.lineWidth = 10
-//        gameBoundary.strokeColor = SKColor.black
-//        gameBoundary.position = CGPoint(x: size.width / 2, y: 50)
-//        gameBoundary.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width, height: 100))
-//        gameBoundary.physicsBody?.categoryBitMask = object2.gameBoundary.rawValue
-//        gameBoundary.physicsBody?.collisionBitMask = object.player.rawValue
-//        addChild(gameBoundary)
-//        
+        //        //game border - keeps player sprite within boundaries
+        //        let gameBoundary = SKShapeNode(rectOf: CGSize(width: self.frame.width, height: 100))
+        //        gameBoundary.lineWidth = 10
+        //        gameBoundary.strokeColor = SKColor.black
+        //        gameBoundary.position = CGPoint(x: size.width / 2, y: 50)
+        //        gameBoundary.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width, height: 100))
+        //        gameBoundary.physicsBody?.categoryBitMask = object2.gameBoundary.rawValue
+        //        gameBoundary.physicsBody?.collisionBitMask = object.player.rawValue
+        //        addChild(gameBoundary)
+        //
         back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
         back.zPosition = 1.0
         back.setScale(0.25)
@@ -256,7 +257,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
-
+        
         
         if (!gameOver){
             playerTouched = true
@@ -279,7 +280,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 collectedItemsLabel.zPosition = -2.0
                 tipLabel.zPosition = -2.0
             }
-
+            
             
         }else{
             
@@ -460,7 +461,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         carb_count += food.carb_count
                         incrementMeter(carbs: food.carb_count)
                         
-                        if(carb_count>bfastMinCarbs && carb_count<bfastMaxCarbs && b_plate) {
+                        if(carb_count>=bfastMinCarbs && carb_count<=bfastMaxCarbs && b_plate) {
                             //breakfast complete
                             
                             view?.scene?.isPaused = true
@@ -469,7 +470,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //show collected items
                             showCollectedItems()
-                           
+                            
                             
                             //reset all parameters to prepare for lunch round
                             carb_count = 0
@@ -503,7 +504,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             carb_count = 0
                             collectedItems.removeAll()
                             resetMeter()
-                        }else if(carb_count>lunchMinCarbs && carb_count<lunchMaxCarbs && l_plate) {
+                        }else if(carb_count>=lunchMinCarbs && carb_count<=lunchMaxCarbs && l_plate) {
                             view?.scene?.isPaused = true
                             //lunch complete
                             score += 100
@@ -559,7 +560,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             addChild(d_full_plate)
                             endRound()
                             
-                        }else if(carb_count>=dinnerMaxCarbs && d_plate){
+                        }else if(carb_count>dinnerMaxCarbs && d_plate){
                             //dinner overshot
                             score -= 30
                             scoreBar.text = "SCORE: \(score)"
@@ -602,7 +603,22 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         //alert the player with the number of carbs of each item they collect
         food_number.text = "\(carbs)"
         food_number.fontSize = 100
-        food_number.fontColor = SKColor.green
+        
+        //alternate between colors 
+        //0 for blue
+        //1 for magenta
+        let orangeFont = SKColor.orange
+        let magentaFont = SKColor.magenta
+        
+        
+        if(alternateNum == 0){
+            food_number.fontColor = orangeFont
+            alternateNum = 1
+        }else if(alternateNum == 1){
+            food_number.fontColor = magentaFont
+            alternateNum = 0
+        }
+        
         food_number.position = CGPoint(x: player.position.x, y: player.position.y)
         food_number.zPosition = 1.0
         addChild(food_number)
@@ -615,13 +631,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     //show collected items after each plate
     func showCollectedItems(){
-       var spacing = 100
+        var spacing = 100
         collectionBackground.zPosition = 2.6
         collectedItemsLabel.zPosition = 3.0
-       
-            
+        
+        
         //show collected items before moving on to next plate
-
+        
         for items in collectedItems{
             print(items.node)
             //show already collected items

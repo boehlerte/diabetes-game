@@ -17,6 +17,10 @@ enum object3:UInt32{
 class Level3: SKScene, SKPhysicsContactDelegate{
     var isOpen = false
     var gameOver = false
+    
+    //variable used to alternate between colors for carbCountAlert
+    var alternateNum = 0
+    
     var collectedItems = [Foods]()
     var count = 0
     var interval = 1
@@ -506,13 +510,28 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         //alert the player with the number of carbs of each item they collect
         food_number.text = "\(carbs)"
         food_number.fontSize = 100
-        food_number.fontColor = SKColor.green
+        
+        //alternate between colors
+        //0 for blue
+        //1 for magenta
+        let orangeFont = SKColor.orange
+        let magentaFont = SKColor.magenta
+        
+        if(alternateNum == 0){
+            food_number.fontColor = orangeFont
+            alternateNum = 1
+        }else if(alternateNum == 1){
+            food_number.fontColor = magentaFont
+            alternateNum = 0
+        }
+
+        
         food_number.position = CGPoint(x: player.position.x, y: player.position.y)
         food_number.zPosition = 1.0
-        food_number.fontColor = .darkText
-        if(d_plate) {
-            food_number.fontColor = .lightText
-        }
+//        food_number.fontColor = .darkText
+//        if(d_plate) {
+//            food_number.fontColor = .lightText
+//        }
         addChild(food_number)
         
         let scaleUp = SKAction.scale(to: 2.0, duration: 0.2)
