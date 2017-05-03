@@ -15,6 +15,7 @@ enum object3:UInt32{
 }
 
 class Level3: SKScene, SKPhysicsContactDelegate{
+    var isOpen = false
     var gameOver = false
     var collectedItems = [Foods]()
     var count = 0
@@ -46,7 +47,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var done = false
     
     var b_goal1 = 30    //start of breakfast range
-    var b_goal2 = 45    //start of 
+    var b_goal2 = 45    //start of
     var ld_goal1 = 60
     var ld_goal2 = 75
     
@@ -70,14 +71,15 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
-    
-
+    //food plate screen labels and background
+    let collectedItemsLabel = SKSpriteNode(imageNamed: "foods_on_your_plate")
+    let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
     
     override func didMove(to view: SKView) {
         
-//        feedback.isUserInteractionEnabled = true
-//        let tap = UITapGestureRecognizer(target: self, action: Selector(("tapFunction:")))
-//        feedback.addGestureRecognizer(tap)
+        //        feedback.isUserInteractionEnabled = true
+        //        let tap = UITapGestureRecognizer(target: self, action: Selector(("tapFunction:")))
+        //        feedback.addGestureRecognizer(tap)
         
         
         background_breakfast.size = self.frame.size
@@ -118,6 +120,19 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         d_empty_plate.name = "d_plate"
         addChild(d_empty_plate)
         
+        //add food plate scene
+        //bring to front only when plate is clicked
+        collectedItemsLabel.position = CGPoint(x: frame.midX, y: frame.midY + 300)
+        collectedItemsLabel.zPosition = -2.0
+        addChild(collectedItemsLabel)
+        
+        collectionBackground.size = self.frame.size
+        collectionBackground.position = CGPoint(x: frame.midX, y: frame.midY)
+        collectionBackground.zPosition = -2.0
+        addChild(collectionBackground)
+        
+        
+        //back button to return to main menu
         back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
         back.zPosition = 1.0
         back.setScale(0.25)
@@ -158,12 +173,16 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         levelThreeScreen.run(
             SKAction.fadeOut(withDuration: 0.5)
         )
-    
+        
     }
     
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+        let touch = touches.first
+        let touchLocation = touch!.location(in: self)
+
+        
         if (!gameOver && !feedbackshown){
             playerTouched = true
             //play game when player puts down finger
@@ -172,6 +191,17 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             
             for touch in touches {
                 playerLocation = touch.location(in: self)
+            }
+            
+            if(collectionBackground.contains(touchLocation)){
+                isOpen = false
+                for child in self.children {
+                    if child.name == "hint" {
+                        child.removeFromParent()
+                    }
+                }
+                collectionBackground.zPosition = -2.0
+                collectedItemsLabel.zPosition = -2.0
             }
             
         }else if (gameOver){
@@ -197,15 +227,25 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             let scene = MenuScene(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
         }
-
+            
         else if (!gameOver && !feedbackshown){
             playerTouched = false
             //pause game when player lifts finger
             view?.scene?.isPaused = true
             addChild(pauseScreen)
             
+            //if plate clicked, open screen to show food on plate
+            if (!isOpen && (b_empty_plate.contains(touchLocation) || l_empty_plate.contains(touchLocation) || d_empty_plate.contains(touchLocation)) && collectedItems.count > 0){
+                
+                isOpen = true
+                
+                //show already collected items
+                showCollectedItems()
+                
+            }
+            
         } else {
-        
+            
             if ((successScreen).contains(touchLocation) && !feedbackshown) {
                 let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
                 let scene = RoundSelect(size: self.size)
@@ -213,7 +253,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             }
         }
         
-
+        
     }
     
     
@@ -277,7 +317,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         food.physicsBody?.collisionBitMask = 0
         food.physicsBody?.categoryBitMask = object.food.rawValue
         food.name = "food"
-
+        
         // Add the food to the game
         addChild(food)
         
@@ -313,7 +353,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     func testFoodNode(node: SKSpriteNode){
         if (node == hat) {
             collectedItems.removeAll()
-
+            
             let feedback = UILabel(frame: CGRect(x: 0, y: 0, width: 700, height: 500))
             feedback.center = CGPoint(x: size.width * 0.5, y: size.height/2)
             feedback.backgroundColor = UIColor.init(red: 0.09, green: 0.09, blue: 0.44, alpha: 1.0)
@@ -345,7 +385,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     b_full_plate.position = CGPoint(x: 100, y: 160)
                     b_full_plate.zPosition = 1.0
                     addChild(b_full_plate)
-
+                    
                 } else  {
                     feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(count)!"
                     count = 0
@@ -389,9 +429,9 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
                     self.feedbackshown = false
-
+                    
                 }
-
+                
             } else if (d_plate) {
                 view?.scene?.isPaused = true
                 if(count < ld_goal1) {
@@ -443,7 +483,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 if(!duplicate) {
                     //alert player with number of carbs of item they collected
                     carbCountAlert(carbs: food.carb_count)
-                
+                    
                     //add food to collectedItems
                     collectedItems.append(food)
                     playSound(sound: good_carb)
@@ -480,6 +520,31 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         let sequence = SKAction.sequence([scaleUp, fade])
         food_number.run(sequence)
     }
+    
+    //show collected items on plate click and after each completed plate
+    func showCollectedItems(){
+        var spacing = 100
+        collectionBackground.zPosition = 2.6
+        collectedItemsLabel.zPosition = 3.0
+        
+        
+        //show collected items before moving on to next plate
+        
+        for items in collectedItems{
+            print(items.node)
+            //show already collected items
+            let itemCard = items.node
+            let floatSpacing = (CGFloat)(spacing)
+            itemCard.position = CGPoint(x: floatSpacing, y: frame.midY + 100)
+            itemCard.zPosition = 4.0
+            itemCard.name = "hint"
+            addChild(itemCard)
+            spacing += 200
+        }
+        
+        
+    }
+
     
     
     func endRound(){
