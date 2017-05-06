@@ -301,7 +301,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 done = true
                 print("\(interval)")
             } else {
-                let randd = Int(arc4random_uniform(43))
+                let randd = Int(arc4random_uniform(42))
                 // pick food to show
                 if((b_plate && Foods.collection[randd].b) || (l_plate && Foods.collection[randd].l) || (d_plate && Foods.collection[randd].d)) {
                     interval += 1
@@ -475,7 +475,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                         duplicate = true
                         playSound(sound: bad_carb)
                         print("duplicate item")                                         //it is a duplicate!
-                        let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+                        let retryScreen = SKSpriteNode(imageNamed: "duplicate_icon")
                         retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                         retryScreen.zPosition = 1.0
                         addChild(retryScreen)

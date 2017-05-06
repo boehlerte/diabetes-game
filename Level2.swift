@@ -375,7 +375,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         var food = Foods.collection[0].node.copy() as! SKSpriteNode
         done = false
         while(!done) {
-            let randd = Int(arc4random_uniform(43))
+            let randd = Int(arc4random_uniform(42))
             // random number casted as int to pick food to show
             if((b_plate && Foods.collection[randd].b) || (l_plate && Foods.collection[randd].l) || (d_plate && Foods.collection[randd].d)) {
                 food = Foods.collection[randd].node.copy() as! SKSpriteNode
@@ -438,7 +438,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         duplicate = true
                         playSound(sound: bad_carb)
                         print("duplicate item")                                         //it is a duplicate!
-                        let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+                        let retryScreen = SKSpriteNode(imageNamed: "duplicate_item")
                         retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                         retryScreen.zPosition = 1.0
                         addChild(retryScreen)
