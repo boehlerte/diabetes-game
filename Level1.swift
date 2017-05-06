@@ -43,9 +43,12 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     //meter to keep track of streak
     var foodMeter = SKSpriteNode(color: SKColor .magenta, size: CGSize(width: 0, height: 50))
     
+    //define the meter zone
+    let meterRange = SKRange(lowerLimit:179)
+    
     
     override func didMove(to view: SKView) {
-        
+    
         background_lunch.size = self.frame.size
         background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
         background_lunch.zPosition = -1
@@ -145,6 +148,10 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         count_label.position = CGPoint(x: size.width * 0.5, y: size.height * 0.05)
         count_label.zPosition = 1.0
         addChild(count_label)
+        
+        //prevent rameses from moving over the meter
+        let keepOffBottom = SKConstraint.positionY(meterRange)
+        player.constraints = [keepOffBottom]
         
     }
     
