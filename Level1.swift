@@ -246,7 +246,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         
         
         
-        let randd = Int(arc4random_uniform(43))
+        let randd = Int(arc4random_uniform(42))
         // random number casted as int to pick food to show
         let food = Foods.collection[randd].node.copy() as! SKSpriteNode
         
@@ -315,6 +315,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
                 }else{
                     playSound(sound: bad_carb)
                     let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+                    retryScreen.name = "asset"
                     retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                     retryScreen.zPosition = 1.0
                     addChild(retryScreen)
@@ -357,7 +358,23 @@ class Level1: SKScene, SKPhysicsContactDelegate{
 //        feedback.removeFromSuperview()
 //    }
     
+    func removeAssets(){
+        //remove assets
+        for child in self.children {
+            if child.name == "asset"{
+                child.removeFromParent()
+            }
+        }
+        for child in self.children {
+            if child.name == "food"{
+                child.removeFromParent()
+            }
+        }
+    }
+    
     func endRound(){
+        
+        removeAssets()
         
         //create and show feedback
         var extraFeedback = ""

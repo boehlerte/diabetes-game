@@ -374,9 +374,16 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 if(count < b_goal1) {
                     feedback.text = "You needed between 30 and 45 grams of carbs \n for breakfast. You only got \(count)!"
                     count = 0
+                    
+                    //clear scene
+                    removeAssets()
                 } else if(count >= b_goal1 && count <= b_goal2) {
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     //set up lunch round
+                    
+                    //clear scene
+                    removeAssets()
+                    
                     b_plate = false
                     l_plate = true
                     background_lunch.size = self.frame.size
@@ -393,6 +400,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 } else  {
                     feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 }
                 self.view?.addSubview(feedback)
                 self.feedbackshown = true
@@ -407,9 +416,14 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 if(count < ld_goal1) {
                     feedback.text = "You needed between 60 and 75 grams of carbs \n for lunch. You only got \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 } else if(count >= ld_goal1 && count <= ld_goal2) {
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     //set up dinner round
+                    //clear scene
+                    removeAssets()
+                    
                     l_plate = false
                     d_plate = true
                     background_dinner.size = self.frame.size
@@ -425,6 +439,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 } else  {
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for lunch, but you picked up \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 }
                 self.view?.addSubview(feedback)
                 self.feedbackshown = true
@@ -441,6 +457,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 if(count < ld_goal1) {
                     feedback.text = "You needed between 60 and 75 grams of carbs \n for dinner. You only got \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 } else if(count >= ld_goal1 && count <= ld_goal2) {
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     count = 0
@@ -452,6 +470,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 } else  {
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for dinner, but you picked up \(count)!"
                     count = 0
+                    removeAssets()
                 }
                 self.view?.addSubview(feedback)
                 self.feedbackshown = true
@@ -475,7 +494,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                         duplicate = true
                         playSound(sound: bad_carb)
                         print("duplicate item")                                         //it is a duplicate!
-                        let retryScreen = SKSpriteNode(imageNamed: "duplicate_icon")
+                        let retryScreen = SKSpriteNode(imageNamed: "duplicate_item")
                         retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                         retryScreen.zPosition = 1.0
                         addChild(retryScreen)
@@ -564,9 +583,26 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         
     }
 
-    
+    func removeAssets(){
+        //remove retry/success screen
+        //remove carbcount numbers
+        //remove foods
+        //clear scene for restarting a plate 
+        //or clear scene for starting a new plate
+        for child in self.children {
+            if child.name == "asset"{
+                child.removeFromParent()
+            }
+        }
+        for child in self.children {
+            if child.name == "food"{
+                child.removeFromParent()
+            }
+        }
+    }
     
     func endRound(){
+        removeAssets()
         gameOver = true
         view?.scene?.isPaused = true
         player.removeFromParent()
