@@ -94,6 +94,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let tipLabel = SKSpriteNode(imageNamed: "try_this_one")
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
     
+    //define safe zone
+    let safeRange = SKRange(lowerLimit:309)
+    
     override func didMove(to view: SKView) {
         
         background_breakfast.size = self.frame.size
@@ -246,6 +249,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         collectionBackground.zPosition = -2.0
         addChild(collectionBackground)
         
+        //prevent Rameses from moving to the safe zone
+        let keepOffBottom = SKConstraint.positionY(safeRange)
+        player.constraints = [keepOffBottom]
         
         
         

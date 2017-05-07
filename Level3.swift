@@ -73,7 +73,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
-    
+    //define safe zone
+    let safeRange = SKRange(lowerLimit:309)
 
     
     override func didMove(to view: SKView) {
@@ -169,6 +170,10 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         levelThreeScreen.run(
             SKAction.fadeOut(withDuration: 0.5)
         )
+        
+        //prevent Rameses from moving to the safe zone
+        let keepOffBottom = SKConstraint.positionY(safeRange)
+        player.constraints = [keepOffBottom]
     
     }
     
