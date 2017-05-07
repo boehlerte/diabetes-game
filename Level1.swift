@@ -8,7 +8,6 @@ enum object:UInt32{
 
 class Level1: SKScene, SKPhysicsContactDelegate{
     var gameOver = false
-
     
     //initialize player avatar
     let player = SKSpriteNode(imageNamed: "ram")
@@ -71,6 +70,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         back.setScale(0.25)
         addChild(back)
         var seconds = CGFloat(1.0)
+        
 
         // change non-carb goal depending on round selected
         if(RoundSelect.round==1) {

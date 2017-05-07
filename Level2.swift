@@ -125,16 +125,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         player.name = "player"
         addChild(player)
         
-//        //game border - keeps player sprite within boundaries
-//        let gameBoundary = SKShapeNode(rectOf: CGSize(width: self.frame.width, height: 100))
-//        gameBoundary.lineWidth = 10
-//        gameBoundary.strokeColor = SKColor.black
-//        gameBoundary.position = CGPoint(x: size.width / 2, y: 50)
-//        gameBoundary.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width, height: 100))
-//        gameBoundary.physicsBody?.categoryBitMask = object2.gameBoundary.rawValue
-//        gameBoundary.physicsBody?.collisionBitMask = object.player.rawValue
-//        addChild(gameBoundary)
-//        
+        //        //game border - keeps player sprite within boundaries
+        //        let gameBoundary = SKShapeNode(rectOf: CGSize(width: self.frame.width, height: 100))
+        //        gameBoundary.lineWidth = 10
+        //        gameBoundary.strokeColor = SKColor.black
+        //        gameBoundary.position = CGPoint(x: size.width / 2, y: 50)
+        //        gameBoundary.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width, height: 100))
+        //        gameBoundary.physicsBody?.categoryBitMask = object2.gameBoundary.rawValue
+        //        gameBoundary.physicsBody?.collisionBitMask = object.player.rawValue
+        //        addChild(gameBoundary)
+        //
         back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
         back.zPosition = 1.0
         back.setScale(0.25)
@@ -171,6 +171,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         scoreBar.fontColor = SKColor.blue
         scoreBar.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
         scoreBar.zPosition = 2.5
+        scoreBar.text = "SCORE: 0"
         addChild(scoreBar)
         
         //add meter
@@ -256,7 +257,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
-
+        
         
         if (!gameOver){
             playerTouched = true
@@ -279,7 +280,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 collectedItemsLabel.zPosition = -2.0
                 tipLabel.zPosition = -2.0
             }
-
+            
             
         }else{
             
@@ -456,7 +457,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                     playSound(sound: good_carb)
                     
                     if(food.carb){
-                        playSound(sound: bad_carb)
+                        playSound(sound: good_carb)
                         carb_count += food.carb_count
                         incrementMeter(carbs: food.carb_count)
                         
@@ -469,7 +470,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                             //show collected items
                             showCollectedItems()
-                           
+                            
                             
                             //reset all parameters to prepare for lunch round
                             carb_count = 0
@@ -615,13 +616,13 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     //show collected items after each plate
     func showCollectedItems(){
-       var spacing = 100
+        var spacing = 100
         collectionBackground.zPosition = 2.6
         collectedItemsLabel.zPosition = 3.0
-       
-            
+        
+        
         //show collected items before moving on to next plate
-
+        
         for items in collectedItems{
             print(items.node)
             //show already collected items
