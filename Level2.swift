@@ -99,6 +99,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let tipLabel = SKSpriteNode(imageNamed: "try_this_one")
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
     
+    let bCompleteLabel = SKSpriteNode(imageNamed: "breakfast_complete")
+    let lCompleteLabel = SKSpriteNode(imageNamed: "lunch_complete")
+    let dCompleteLabel = SKSpriteNode(imageNamed: "dinner_complete")
+    
     //define safe zone
     let safeRange = SKRange(lowerLimit:309)
     
@@ -244,7 +248,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         //bring to front only when plate is clicked
         collectedItemsLabel.position = CGPoint(x: frame.midX, y: frame.midY + 300)
         collectedItemsLabel.zPosition = -2.0
+        bCompleteLabel.position = CGPoint(x: frame.midX, y: frame.midY + 200)
+        lCompleteLabel.position = CGPoint(x: frame.midX, y: frame.midY + 200)
+        dCompleteLabel.position = CGPoint(x: frame.midX, y: frame.midY + 200)
+        bCompleteLabel.zPosition = -2.0
+        lCompleteLabel.zPosition = -2.0
+        dCompleteLabel.zPosition = -2.0
         addChild(collectedItemsLabel)
+        addChild(bCompleteLabel)
+        addChild(lCompleteLabel)
+        addChild(dCompleteLabel)
         
         tipLabel.position = CGPoint(x: frame.midX, y: frame.midY - 80)
         tipLabel.zPosition = -2.0
@@ -291,6 +304,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 }
                 collectionBackground.zPosition = -2.0
                 collectedItemsLabel.zPosition = -2.0
+                bCompleteLabel.zPosition = -2.0
+                lCompleteLabel.zPosition = -2.0
+                dCompleteLabel.zPosition = -2.0
                 tipLabel.zPosition = -2.0
                 results.removeFromParent()
                 self.view?.isPaused = false
@@ -335,7 +351,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 
                 isOpen = true
                 
-                tipLabel.zPosition = 3.0
+                tipLabel.zPosition = 3.2
                 
                 //show already collected items
                 showCollectedItems()
@@ -403,6 +419,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         let actualY = random(min: food.size.height/2 + 230, max: size.height - food.size.height/2)
         
         food.position = CGPoint(x: size.width + food.size.width/2, y: actualY)
+        food.zPosition = 0.5
         food.physicsBody = SKPhysicsBody(circleOfRadius: food.size.width/2)
         food.physicsBody?.affectedByGravity = false
         food.physicsBody?.collisionBitMask = 0
@@ -495,14 +512,18 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
                             
+
+                            //show final plate
+                            showFinalPlate()
+
                                 results.text = "Nice! On to lunch: 60-75 grams"
                                 results.position = CGPoint(x: frame.midX, y: frame.midY - 150)
                                 results.zPosition = 4.0
                                 results.color = UIColor.black
                                 results.fontSize = 50
                             
-                            //show collected items
-                            showCollectedItems()
+                           
+
                             
                             
                             //reset all parameters to prepare for lunch round
@@ -560,6 +581,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
                             
+
+                            //show final plate
+                            showFinalPlate()
+
                             
                             results.text = "Nice! On to dinner: 60-75 grams"
                             results.position = CGPoint(x: frame.midX, y: frame.midY - 150)
@@ -567,8 +592,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             results.color = UIColor.black
                             results.fontSize = 50
                             
-                            //show all collected items before moving on to next plate
-                            showCollectedItems()
+                      
+
                             
                             //reset all parameters to prepare for dinner round
                             carb_count = 0
@@ -622,8 +647,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
                             
-                            //show all collected items
-                            showCollectedItems()
+                            //show final plate
+                            showFinalPlate()
                             
                             d_plate = false
                             d_empty_plate.removeFromParent()
@@ -717,8 +742,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     //show collected items after each plate
     func showCollectedItems(){
         var spacing = 100
-        collectionBackground.zPosition = 2.6
-        collectedItemsLabel.zPosition = 3.0
+        collectionBackground.zPosition = 3.0
+        collectedItemsLabel.zPosition = 3.2
         
         
         //show collected items before moving on to next plate
@@ -734,6 +759,37 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             addChild(itemCard)
             spacing += 200
         }
+
+    }
+    
+    func showFinalPlate(){
+        var spacing = 100
+        collectionBackground.zPosition = 3.0
+    
+    
+        if(b_plate){
+            bCompleteLabel.zPosition = 3.2
+        }else if l_plate {
+            lCompleteLabel.zPosition = 3.2
+        }else if d_plate {
+            dCompleteLabel.zPosition = 3.2
+        }
+    
+        //show collected items before moving on to next plate
+    
+        for items in collectedItems{
+            print(items.node)
+            //show already collected items
+            let itemCard = items.node
+            let floatSpacing = (CGFloat)(spacing)
+            itemCard.position = CGPoint(x: floatSpacing, y: frame.midY)
+            itemCard.zPosition = 4.0
+            itemCard.name = "hint"
+            addChild(itemCard)
+            spacing += 200
+        }
+
+
         if(d_plate) {
             results.text = "You finished Level 2 with a score of \(score)!"
             results.position = CGPoint(x: frame.midX, y: frame.midY - 150)
@@ -743,7 +799,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         }
         addChild(results)
 
-        
+
     }
     
     //determine a random item that keeps player in carb range - show hint
