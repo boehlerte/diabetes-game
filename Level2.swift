@@ -538,7 +538,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             addChild(pauseScreen)
                             view?.scene?.isPaused = true
                             score -= 30
-                            feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(carb_count)!"
+                            feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(carb_count)! Let's restart breakfast."
                             self.view?.addSubview(feedback)
                             self.feedbackshown = true
                             self.view?.bringSubview(toFront: feedback)
@@ -601,7 +601,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             addChild(pauseScreen)
                             //lunch overshot
                             view?.scene?.isPaused = true
-                            feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for lunch, but you picked up \(carb_count)!"
+                            feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for lunch, but you picked up \(carb_count)! Let's restart lunch."
                             self.view?.addSubview(feedback)
                             self.feedbackshown = true
                             self.view?.bringSubview(toFront: feedback)
@@ -636,7 +636,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             //dinner overshot
                             addChild(pauseScreen)
                             view?.scene?.isPaused = true
-                            feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for dinner, but you picked up \(carb_count)!"
+                            feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for dinner, but you picked up \(carb_count)! Let's restart dinner."
                             self.view?.addSubview(feedback)
                             self.feedbackshown = true
                             self.view?.bringSubview(toFront: feedback)
