@@ -70,14 +70,16 @@ class RoundSelect: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
+        let reveals = SKTransition.flipVertical(withDuration: 3)
+
         if(back.contains(touchLocation)) {
-            let reveal = SKTransition.flipVertical(withDuration: 3)
+            //let reveal = SKTransition.flipVertical(withDuration: 3)
             let scenes = MenuScene(size: self.size)
-            self.view?.presentScene(scenes, transition: reveal)
+            self.view?.presentScene(scenes, transition: reveals)
         }
         
         // change round variable depending on which was chosen
-        if r1.contains(touchLocation) {
+        else if r1.contains(touchLocation) {
             RoundSelect.round = 1
         } else if r2.contains(touchLocation) {
             RoundSelect.round = 2
@@ -102,6 +104,7 @@ class RoundSelect: SKScene {
                 let scene = Level3(size: self.size)
                 self.view?.presentScene(scene, transition: reveal)
             }
+            RoundSelect.round = 0
         }
     }
     

@@ -96,6 +96,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let tipLabel = SKSpriteNode(imageNamed: "try_this_one")
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
     
+    //define safe zone
+    let safeRange = SKRange(lowerLimit:309)
+    
     override func didMove(to view: SKView) {
         
         background_breakfast.size = self.frame.size
@@ -173,6 +176,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         scoreBar.fontColor = SKColor.blue
         scoreBar.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
         scoreBar.zPosition = 2.5
+        scoreBar.text = "SCORE: 0"
         addChild(scoreBar)
         
         //add meter
@@ -249,6 +253,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         collectionBackground.zPosition = -2.0
         addChild(collectionBackground)
         
+        //prevent Rameses from moving to the safe zone
+        let keepOffBottom = SKConstraint.positionY(safeRange)
+        player.constraints = [keepOffBottom]
         
         
         
@@ -461,7 +468,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                     playSound(sound: good_carb)
                     
                     if(food.carb){
-                        playSound(sound: bad_carb)
+                        playSound(sound: good_carb)
                         carb_count += food.carb_count
                         incrementMeter(carbs: food.carb_count)
                         

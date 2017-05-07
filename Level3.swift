@@ -34,6 +34,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
     let back = SKSpriteNode(imageNamed: "back_button")
     var seconds = CGFloat(1.0)
+    let scoreBar = SKLabelNode(fontNamed: "Marker Felt")
+
     
     var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
@@ -50,6 +52,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     
     var done = false
     
+    var score = 0
     var b_goal1 = 30    //start of breakfast range
     var b_goal2 = 45    //start of
     var ld_goal1 = 60
@@ -75,9 +78,15 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
+
     //food plate screen labels and background
     let collectedItemsLabel = SKSpriteNode(imageNamed: "foods_on_your_plate")
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
+
+    //define safe zone
+    let safeRange = SKRange(lowerLimit:309)
+
+
     
     override func didMove(to view: SKView) {
         
@@ -141,6 +150,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         back.zPosition = 1.0
         back.setScale(0.25)
         addChild(back)
+    
         
         if(RoundSelect.round==1) {
             seconds = CGFloat(1.0)
@@ -157,10 +167,17 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
-                SKAction.wait(forDuration: 0.75) // was 1
+                SKAction.wait(forDuration: TimeInterval(seconds)) // was 1
                 ])
         ))
         
+        //add score bar
+        scoreBar.fontSize = 30
+        scoreBar.fontColor = SKColor.blue
+        scoreBar.position = CGPoint(x: size.width * 0.9, y: size.height * 0.95)
+        scoreBar.zPosition = 2.5
+        scoreBar.text = "SCORE: 0"
+        addChild(scoreBar)
         
         pauseScreen.position = CGPoint(x: frame.midX, y: frame.midY)
         pauseScreen.zPosition = 1.0
@@ -178,6 +195,11 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             SKAction.fadeOut(withDuration: 0.5)
         )
         
+
+        //prevent Rameses from moving to the safe zone
+        let keepOffBottom = SKConstraint.positionY(safeRange)
+        player.constraints = [keepOffBottom]
+
     }
     
     // RECOGNIZING TOUCH GESTURES
@@ -372,12 +394,16 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             if (b_plate) {
                 view?.scene?.isPaused = true
                 if(count < b_goal1) {
+                    score -= 30
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You needed between 30 and 45 grams of carbs \n for breakfast. You only got \(count)!"
                     count = 0
                     
                     //clear scene
                     removeAssets()
                 } else if(count >= b_goal1 && count <= b_goal2) {
+                    score += 100
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     //set up lunch round
                     
@@ -398,6 +424,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     addChild(b_full_plate)
                     
                 } else  {
+                    score -= 30
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(count)!"
                     count = 0
                     //clear scene
@@ -410,15 +438,20 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
                     self.feedbackshown = false
+
                 }
             } else if (l_plate) {
                 view?.scene?.isPaused = true
                 if(count < ld_goal1) {
+                    score -= 30
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You needed between 60 and 75 grams of carbs \n for lunch. You only got \(count)!"
                     count = 0
                     //clear scene
                     removeAssets()
                 } else if(count >= ld_goal1 && count <= ld_goal2) {
+                    score += 100
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     //set up dinner round
                     //clear scene
@@ -433,10 +466,12 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     addChild(background_dinner)
                     count = 0
                     l_empty_plate.removeFromParent()
-                    l_full_plate.position = CGPoint(x: 300, y: 160)
+                    l_full_plate.position = CGPoint(x: 200, y: 160)
                     l_full_plate.zPosition = 1.0
                     addChild(l_full_plate)
                 } else  {
+                    score -= 30
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for lunch, but you picked up \(count)!"
                     count = 0
                     //clear scene
@@ -455,12 +490,16 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             } else if (d_plate) {
                 view?.scene?.isPaused = true
                 if(count < ld_goal1) {
+                    score -= 30
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You needed between 60 and 75 grams of carbs \n for dinner. You only got \(count)!"
                     count = 0
                     //clear scene
                     removeAssets()
                 } else if(count >= ld_goal1 && count <= ld_goal2) {
-                    feedback.text = "You got \(count) grams of carbs! \n Very well done!"
+                    score += 100
+                    scoreBar.text = "SCORE: \(score)"
+                    feedback.text = "You got \(count) grams of carbs! \n Very well done! You finished with a score of \(score)!"
                     count = 0
                     d_empty_plate.removeFromParent()
                     d_full_plate.position = CGPoint(x: 300, y: 160)
@@ -468,6 +507,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     addChild(d_full_plate)
                     complete = true
                 } else  {
+                    score -= 30
+                    scoreBar.text = "SCORE: \(score)"
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for dinner, but you picked up \(count)!"
                     count = 0
                     removeAssets()
