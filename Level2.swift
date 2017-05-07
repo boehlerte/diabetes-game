@@ -25,6 +25,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let background_dinner = SKSpriteNode(imageNamed: "background_dinner")
     let back = SKSpriteNode(imageNamed: "back_button")
     let goal_label = SKLabelNode(fontNamed: "Marker Felt")
+    let results = SKLabelNode(fontNamed: "Marker Felt")
+    var feedbackshown = false
+
     
     //goal scene images - breakfast goal, lunch goal, dinner goal
     //show goals before player starts each plate
@@ -32,7 +35,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     let l_goal = SKSpriteNode(imageNamed: "lunch_goal")
     let d_goal = SKSpriteNode(imageNamed: "dinner_goal")
     
-    
+    let feedback = UILabel()
     var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
     
@@ -282,7 +285,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         let touchLocation = touch!.location(in: self)
         
         
-        if (!gameOver){
+        if (!gameOver && !feedbackshown){
             playerTouched = true
             //play game when player puts down finger
             view?.scene?.isPaused = false
@@ -305,10 +308,12 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                 lCompleteLabel.zPosition = -2.0
                 dCompleteLabel.zPosition = -2.0
                 tipLabel.zPosition = -2.0
+                results.removeFromParent()
+                self.view?.isPaused = false
             }
             
             
-        }else{
+        }else if (!feedbackshown){
             
             let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
             
@@ -334,7 +339,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
             let scene = MenuScene(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
-        } else if (!gameOver){
+            print("WHYYYY")
+        } else if (!gameOver && !feedbackshown){
             playerTouched = false
             //pause game when player lifts finger
             view?.scene?.isPaused = true
@@ -358,7 +364,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             }
         }else{
             
-            if (successScreen).contains(touchLocation) {
+            if ((successScreen).contains(touchLocation) && !feedbackshown) {
                 let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
                 let scene = RoundSelect(size: self.size)
                 self.view?.presentScene(scene, transition: reveal)
@@ -457,6 +463,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     func testFoodNode(node: SKSpriteNode){
         
+        let feedback = UILabel(frame: CGRect(x: 0, y: 0, width: 700, height: 500))
+        feedback.center = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+        feedback.backgroundColor = UIColor.init(red: 0.09, green: 0.09, blue: 0.44, alpha: 1.0)
+        feedback.textAlignment = .center
+        feedback.numberOfLines = 5
+        feedback.textColor = .lightText
+        feedback.font = feedback.font.withSize(50)
+        feedback.layer.masksToBounds = true
+        feedback.layer.cornerRadius = 50
+        
         for food in Foods.collection {                                                  //look at every food
             if food.node.texture == node.texture {                                      //compare to current food
                 var duplicate = false
@@ -496,8 +512,18 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
                             
+
                             //show final plate
                             showFinalPlate()
+
+                                results.text = "Nice! On to lunch: 60-75 grams"
+                                results.position = CGPoint(x: frame.midX, y: frame.midY - 150)
+                                results.zPosition = 4.0
+                                results.color = UIColor.black
+                                results.fontSize = 50
+                            
+                           
+
                             
                             
                             //reset all parameters to prepare for lunch round
@@ -530,7 +556,19 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                         }else if(carb_count>bfastMaxCarbs && b_plate){
                             //breakfast overshot
+                            addChild(pauseScreen)
+                            view?.scene?.isPaused = true
                             score -= 30
+                            feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(carb_count)! Let's restart breakfast."
+                            self.view?.addSubview(feedback)
+                            self.feedbackshown = true
+                            self.view?.bringSubview(toFront: feedback)
+                            let when = DispatchTime.now() + 3 // delay
+                            DispatchQueue.main.asyncAfter(deadline: when) {
+                                feedback.removeFromSuperview()
+                                self.feedbackshown = false
+                            }
+
                             scoreBar.text = "SCORE: \(score)"
                             //reset count
                             carb_count = 0
@@ -543,8 +581,19 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             score += 100
                             scoreBar.text = "SCORE: \(score)"
                             
+
                             //show final plate
                             showFinalPlate()
+
+                            
+                            results.text = "Nice! On to dinner: 60-75 grams"
+                            results.position = CGPoint(x: frame.midX, y: frame.midY - 150)
+                            results.zPosition = 4.0
+                            results.color = UIColor.black
+                            results.fontSize = 50
+                            
+                      
+
                             
                             //reset all parameters to prepare for dinner round
                             carb_count = 0
@@ -574,7 +623,18 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             background_dinner.zPosition = -1
                             addChild(background_dinner)
                         }else if(carb_count>lunchMaxCarbs && l_plate){
+                            addChild(pauseScreen)
                             //lunch overshot
+                            view?.scene?.isPaused = true
+                            feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for lunch, but you picked up \(carb_count)! Let's restart lunch."
+                            self.view?.addSubview(feedback)
+                            self.feedbackshown = true
+                            self.view?.bringSubview(toFront: feedback)
+                            let when = DispatchTime.now() + 3 // delay
+                            DispatchQueue.main.asyncAfter(deadline: when) {
+                                feedback.removeFromSuperview()
+                                self.feedbackshown = false
+                            }
                             score -= 30
                             scoreBar.text = "SCORE: \(score)"
                             //reset count
@@ -599,6 +659,17 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             
                         }else if(carb_count>dinnerMaxCarbs && d_plate){
                             //dinner overshot
+                            addChild(pauseScreen)
+                            view?.scene?.isPaused = true
+                            feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for dinner, but you picked up \(carb_count)! Let's restart dinner."
+                            self.view?.addSubview(feedback)
+                            self.feedbackshown = true
+                            self.view?.bringSubview(toFront: feedback)
+                            let when = DispatchTime.now() + 3 // delay
+                            DispatchQueue.main.asyncAfter(deadline: when) {
+                                feedback.removeFromSuperview()
+                                self.feedbackshown = false
+                            }
                             score -= 30
                             scoreBar.text = "SCORE: \(score)"
                             //reset count
@@ -688,7 +759,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             addChild(itemCard)
             spacing += 200
         }
-        
+
     }
     
     func showFinalPlate(){
@@ -717,6 +788,16 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             addChild(itemCard)
             spacing += 200
         }
+
+
+        if(d_plate) {
+            results.text = "You finished Level 2 with a score of \(score)!"
+            results.position = CGPoint(x: frame.midX, y: frame.midY - 150)
+            results.zPosition = 4.0
+            results.color = UIColor.black
+            results.fontSize = 50
+        }
+        addChild(results)
 
 
     }
