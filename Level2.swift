@@ -14,7 +14,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     //hint bar open variable
     var isOpen = false
     
-    
+    //variable to alternate between colors used for carbCountAlert
+    var alternateNum = 0
     
     //collection of food sprites
     var collectedItems = [Foods]()
@@ -61,6 +62,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     var playerLocation = CGPoint(x: 0, y: 0)
     
     let successScreen = SKSpriteNode(imageNamed: "success-icon")
+    
     let levelTwoScreen = SKSpriteNode(imageNamed: "level2icon")
     
     //pause when touch contact ends
@@ -188,10 +190,12 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         
         pauseScreen.position = CGPoint(x: frame.midX, y: frame.midY)
         pauseScreen.zPosition = 1.0
+        pauseScreen.name = "asset"
         
         //position success screen to center
         successScreen.position = CGPoint(x: frame.midX, y: frame.midY)
         successScreen.zPosition = 1.0
+        successScreen.name = "asset"
         
         
         levelTwoScreen.position = CGPoint(x: frame.midX, y: frame.midY)
@@ -381,7 +385,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         var food = Foods.collection[0].node.copy() as! SKSpriteNode
         done = false
         while(!done) {
-            let randd = Int(arc4random_uniform(43))
+            let randd = Int(arc4random_uniform(42))
             // random number casted as int to pick food to show
             if((b_plate && Foods.collection[randd].b) || (l_plate && Foods.collection[randd].l) || (d_plate && Foods.collection[randd].d)) {
                 food = Foods.collection[randd].node.copy() as! SKSpriteNode
@@ -444,7 +448,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         duplicate = true
                         playSound(sound: bad_carb)
                         print("duplicate item")                                         //it is a duplicate!
-                        let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+                        let retryScreen = SKSpriteNode(imageNamed: "duplicate_item")
+                        retryScreen.name = "asset"
                         retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                         retryScreen.zPosition = 1.0
                         addChild(retryScreen)
@@ -467,7 +472,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                         carb_count += food.carb_count
                         incrementMeter(carbs: food.carb_count)
                         
-                        if(carb_count>bfastMinCarbs && carb_count<bfastMaxCarbs && b_plate) {
+                        if(carb_count>=bfastMinCarbs && carb_count<=bfastMaxCarbs && b_plate) {
                             //breakfast complete
                             
                             view?.scene?.isPaused = true
@@ -488,6 +493,10 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             addChild(b_full_plate)
                             background_breakfast.removeFromParent()
                             collectedItems.removeAll()
+                            
+                            //remove assets
+                            removeAssets()
+                            
                             
                             //set up lunch round
                             l_plate = true
@@ -510,7 +519,8 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             carb_count = 0
                             collectedItems.removeAll()
                             resetMeter()
-                        }else if(carb_count>lunchMinCarbs && carb_count<lunchMaxCarbs && l_plate) {
+                            removeAssets()
+                        }else if(carb_count>=lunchMinCarbs && carb_count<=lunchMaxCarbs && l_plate) {
                             view?.scene?.isPaused = true
                             //lunch complete
                             score += 100
@@ -529,6 +539,9 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             addChild(l_full_plate)
                             background_lunch.removeFromParent()
                             collectedItems.removeAll()
+                            
+                            //remove assets
+                            removeAssets()
                             
                             //set up dinner round
                             d_plate = true
@@ -551,6 +564,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             carb_count = 0
                             collectedItems.removeAll()
                             resetMeter()
+                            removeAssets()
                         }else if(carb_count>=dinnerMinCarbs && carb_count<=dinnerMaxCarbs && d_plate) {
                             //dinner complete
                             score += 100
@@ -566,7 +580,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             addChild(d_full_plate)
                             endRound()
                             
-                        }else if(carb_count>=dinnerMaxCarbs && d_plate){
+                        }else if(carb_count>dinnerMaxCarbs && d_plate){
                             //dinner overshot
                             score -= 30
                             scoreBar.text = "SCORE: \(score)"
@@ -574,6 +588,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
                             carb_count = 0
                             collectedItems.removeAll()
                             resetMeter()
+                            removeAssets()
                         }
                         
                         //change goal label once plate has been established
@@ -605,11 +620,27 @@ class Level2: SKScene, SKPhysicsContactDelegate{
     
     func carbCountAlert(carbs: Int){
         let food_number = SKLabelNode(fontNamed: "Marker Felt")
+        food_number.name = "asset"
         
         //alert the player with the number of carbs of each item they collect
         food_number.text = "\(carbs)"
         food_number.fontSize = 100
-        food_number.fontColor = SKColor.green
+        
+        //alternate between colors 
+        //0 for blue
+        //1 for magenta
+        let orangeFont = SKColor.orange
+        let magentaFont = SKColor.magenta
+        
+        
+        if(alternateNum == 0){
+            food_number.fontColor = orangeFont
+            alternateNum = 1
+        }else if(alternateNum == 1){
+            food_number.fontColor = magentaFont
+            alternateNum = 0
+        }
+        
         food_number.position = CGPoint(x: player.position.x, y: player.position.y)
         food_number.zPosition = 1.0
         addChild(food_number)
@@ -652,7 +683,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             
             done = false
             while(!done) {
-                let randd = Int(arc4random_uniform(43))
+                let randd = Int(arc4random_uniform(42))
                 // random number casted as int to pick food to show
                 if(Foods.collection[randd].b && Foods.collection[randd].carb_count <= carbs_allowed) {
                     food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
@@ -668,7 +699,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             
             done = false
             while(!done) {
-                let randd = Int(arc4random_uniform(43))
+                let randd = Int(arc4random_uniform(42))
                 // random number casted as int to pick food to show
                 if(Foods.collection[randd].l && Foods.collection[randd].carb_count <= carbs_allowed) {
                     food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
@@ -684,7 +715,7 @@ class Level2: SKScene, SKPhysicsContactDelegate{
             
             done = false
             while(!done) {
-                let randd = Int(arc4random_uniform(43))
+                let randd = Int(arc4random_uniform(42))
                 // random number casted as int to pick food to show
                 if(Foods.collection[randd].d && Foods.collection[randd].carb_count <= carbs_allowed) {
                     food_hint = Foods.collection[randd].node.copy() as! SKSpriteNode
@@ -731,7 +762,22 @@ class Level2: SKScene, SKPhysicsContactDelegate{
         foodMeter.size = CGSize(width: 0, height: foodMeter.size.height)
     }
     
+    func removeAssets(){
+        //remove assets
+        for child in self.children {
+            if child.name == "asset"{
+                child.removeFromParent()
+            }
+        }
+        for child in self.children {
+            if child.name == "food"{
+                child.removeFromParent()
+            }
+        }
+    }
+    
     func endRound(){
+        removeAssets()
         gameOver = true
         view?.scene?.isPaused = true
         player.removeFromParent()

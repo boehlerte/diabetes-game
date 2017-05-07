@@ -15,7 +15,12 @@ enum object3:UInt32{
 }
 
 class Level3: SKScene, SKPhysicsContactDelegate{
+    var isOpen = false
     var gameOver = false
+    
+    //variable used to alternate between colors for carbCountAlert
+    var alternateNum = 0
+    
     var collectedItems = [Foods]()
     var count = 0
     var interval = 1
@@ -49,7 +54,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     
     var score = 0
     var b_goal1 = 30    //start of breakfast range
-    var b_goal2 = 45    //start of 
+    var b_goal2 = 45    //start of
     var ld_goal1 = 60
     var ld_goal2 = 75
     
@@ -73,15 +78,21 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
+
+    //food plate screen labels and background
+    let collectedItemsLabel = SKSpriteNode(imageNamed: "foods_on_your_plate")
+    let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
+
     //define safe zone
     let safeRange = SKRange(lowerLimit:309)
+
 
     
     override func didMove(to view: SKView) {
         
-//        feedback.isUserInteractionEnabled = true
-//        let tap = UITapGestureRecognizer(target: self, action: Selector(("tapFunction:")))
-//        feedback.addGestureRecognizer(tap)
+        //        feedback.isUserInteractionEnabled = true
+        //        let tap = UITapGestureRecognizer(target: self, action: Selector(("tapFunction:")))
+        //        feedback.addGestureRecognizer(tap)
         
         
         background_breakfast.size = self.frame.size
@@ -122,6 +133,19 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         d_empty_plate.name = "d_plate"
         addChild(d_empty_plate)
         
+        //add food plate scene
+        //bring to front only when plate is clicked
+        collectedItemsLabel.position = CGPoint(x: frame.midX, y: frame.midY + 300)
+        collectedItemsLabel.zPosition = -2.0
+        addChild(collectedItemsLabel)
+        
+        collectionBackground.size = self.frame.size
+        collectionBackground.position = CGPoint(x: frame.midX, y: frame.midY)
+        collectionBackground.zPosition = -2.0
+        addChild(collectionBackground)
+        
+        
+        //back button to return to main menu
         back.position = CGPoint(x: size.width * 0.05, y: size.height * 0.97)
         back.zPosition = 1.0
         back.setScale(0.25)
@@ -171,15 +195,20 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             SKAction.fadeOut(withDuration: 0.5)
         )
         
+
         //prevent Rameses from moving to the safe zone
         let keepOffBottom = SKConstraint.positionY(safeRange)
         player.constraints = [keepOffBottom]
-    
+
     }
     
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+        let touch = touches.first
+        let touchLocation = touch!.location(in: self)
+
+        
         if (!gameOver && !feedbackshown){
             playerTouched = true
             //play game when player puts down finger
@@ -188,6 +217,17 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             
             for touch in touches {
                 playerLocation = touch.location(in: self)
+            }
+            
+            if(collectionBackground.contains(touchLocation)){
+                isOpen = false
+                for child in self.children {
+                    if child.name == "hint" {
+                        child.removeFromParent()
+                    }
+                }
+                collectionBackground.zPosition = -2.0
+                collectedItemsLabel.zPosition = -2.0
             }
             
         }else if (gameOver){
@@ -213,15 +253,25 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             let scene = MenuScene(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
         }
-
+            
         else if (!gameOver && !feedbackshown){
             playerTouched = false
             //pause game when player lifts finger
             view?.scene?.isPaused = true
             addChild(pauseScreen)
             
+            //if plate clicked, open screen to show food on plate
+            if (!isOpen && (b_empty_plate.contains(touchLocation) || l_empty_plate.contains(touchLocation) || d_empty_plate.contains(touchLocation)) && collectedItems.count > 0){
+                
+                isOpen = true
+                
+                //show already collected items
+                showCollectedItems()
+                
+            }
+            
         } else {
-        
+            
             if ((successScreen).contains(touchLocation) && !feedbackshown) {
                 let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
                 let scene = RoundSelect(size: self.size)
@@ -229,7 +279,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             }
         }
         
-
+        
     }
     
     
@@ -273,7 +323,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 done = true
                 print("\(interval)")
             } else {
-                let randd = Int(arc4random_uniform(43))
+                let randd = Int(arc4random_uniform(42))
                 // pick food to show
                 if((b_plate && Foods.collection[randd].b) || (l_plate && Foods.collection[randd].l) || (d_plate && Foods.collection[randd].d)) {
                     interval += 1
@@ -293,7 +343,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         food.physicsBody?.collisionBitMask = 0
         food.physicsBody?.categoryBitMask = object.food.rawValue
         food.name = "food"
-
+        
         // Add the food to the game
         addChild(food)
         
@@ -329,7 +379,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     func testFoodNode(node: SKSpriteNode){
         if (node == hat) {
             collectedItems.removeAll()
-
+            
             let feedback = UILabel(frame: CGRect(x: 0, y: 0, width: 700, height: 500))
             feedback.center = CGPoint(x: size.width * 0.5, y: size.height/2)
             feedback.backgroundColor = UIColor.init(red: 0.09, green: 0.09, blue: 0.44, alpha: 1.0)
@@ -348,11 +398,18 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You needed between 30 and 45 grams of carbs \n for breakfast. You only got \(count)!"
                     count = 0
+                    
+                    //clear scene
+                    removeAssets()
                 } else if(count >= b_goal1 && count <= b_goal2) {
                     score += 100
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     //set up lunch round
+                    
+                    //clear scene
+                    removeAssets()
+                    
                     b_plate = false
                     l_plate = true
                     background_lunch.size = self.frame.size
@@ -365,12 +422,14 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     b_full_plate.position = CGPoint(x: 100, y: 160)
                     b_full_plate.zPosition = 1.0
                     addChild(b_full_plate)
-
+                    
                 } else  {
                     score -= 30
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "Aww, you needed between 30 and 45 grams \n of carbs for breakfast, but you picked up \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 }
                 self.view?.addSubview(feedback)
                 self.feedbackshown = true
@@ -388,11 +447,16 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You needed between 60 and 75 grams of carbs \n for lunch. You only got \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 } else if(count >= ld_goal1 && count <= ld_goal2) {
                     score += 100
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You got \(count) grams of carbs! \n Very well done!"
                     //set up dinner round
+                    //clear scene
+                    removeAssets()
+                    
                     l_plate = false
                     d_plate = true
                     background_dinner.size = self.frame.size
@@ -410,6 +474,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for lunch, but you picked up \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 }
                 self.view?.addSubview(feedback)
                 self.feedbackshown = true
@@ -418,9 +484,9 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
                     self.feedbackshown = false
-
+                    
                 }
-
+                
             } else if (d_plate) {
                 view?.scene?.isPaused = true
                 if(count < ld_goal1) {
@@ -428,6 +494,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "You needed between 60 and 75 grams of carbs \n for dinner. You only got \(count)!"
                     count = 0
+                    //clear scene
+                    removeAssets()
                 } else if(count >= ld_goal1 && count <= ld_goal2) {
                     score += 100
                     scoreBar.text = "SCORE: \(score)"
@@ -443,6 +511,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                     scoreBar.text = "SCORE: \(score)"
                     feedback.text = "Aww, you needed between 60 and 75 grams \n of carbs for dinner, but you picked up \(count)!"
                     count = 0
+                    removeAssets()
                 }
                 self.view?.addSubview(feedback)
                 self.feedbackshown = true
@@ -466,7 +535,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                         duplicate = true
                         playSound(sound: bad_carb)
                         print("duplicate item")                                         //it is a duplicate!
-                        let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+                        let retryScreen = SKSpriteNode(imageNamed: "duplicate_item")
                         retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                         retryScreen.zPosition = 1.0
                         addChild(retryScreen)
@@ -478,7 +547,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 if(!duplicate) {
                     //alert player with number of carbs of item they collected
                     carbCountAlert(carbs: food.carb_count)
-                
+                    
                     //add food to collectedItems
                     collectedItems.append(food)
                     playSound(sound: good_carb)
@@ -501,13 +570,28 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         //alert the player with the number of carbs of each item they collect
         food_number.text = "\(carbs)"
         food_number.fontSize = 100
-        food_number.fontColor = SKColor.green
+        
+        //alternate between colors
+        //0 for blue
+        //1 for magenta
+        let orangeFont = SKColor.orange
+        let magentaFont = SKColor.magenta
+        
+        if(alternateNum == 0){
+            food_number.fontColor = orangeFont
+            alternateNum = 1
+        }else if(alternateNum == 1){
+            food_number.fontColor = magentaFont
+            alternateNum = 0
+        }
+
+        
         food_number.position = CGPoint(x: player.position.x, y: player.position.y)
         food_number.zPosition = 1.0
-        food_number.fontColor = .darkText
-        if(d_plate) {
-            food_number.fontColor = .lightText
-        }
+//        food_number.fontColor = .darkText
+//        if(d_plate) {
+//            food_number.fontColor = .lightText
+//        }
         addChild(food_number)
         
         let scaleUp = SKAction.scale(to: 2.0, duration: 0.2)
@@ -516,8 +600,50 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         food_number.run(sequence)
     }
     
+    //show collected items on plate click and after each completed plate
+    func showCollectedItems(){
+        var spacing = 100
+        collectionBackground.zPosition = 2.6
+        collectedItemsLabel.zPosition = 3.0
+        
+        
+        //show collected items before moving on to next plate
+        
+        for items in collectedItems{
+            print(items.node)
+            //show already collected items
+            let itemCard = items.node
+            let floatSpacing = (CGFloat)(spacing)
+            itemCard.position = CGPoint(x: floatSpacing, y: frame.midY + 100)
+            itemCard.zPosition = 4.0
+            itemCard.name = "hint"
+            addChild(itemCard)
+            spacing += 200
+        }
+        
+        
+    }
+
+    func removeAssets(){
+        //remove retry/success screen
+        //remove carbcount numbers
+        //remove foods
+        //clear scene for restarting a plate 
+        //or clear scene for starting a new plate
+        for child in self.children {
+            if child.name == "asset"{
+                child.removeFromParent()
+            }
+        }
+        for child in self.children {
+            if child.name == "food"{
+                child.removeFromParent()
+            }
+        }
+    }
     
     func endRound(){
+        removeAssets()
         gameOver = true
         view?.scene?.isPaused = true
         player.removeFromParent()

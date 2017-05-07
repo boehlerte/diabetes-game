@@ -9,6 +9,16 @@ enum object:UInt32{
 class Level1: SKScene, SKPhysicsContactDelegate{
     var gameOver = false
     
+    //scoring feedback
+    //breakdown of the number of carbs and non-carb items collected
+    
+    var feedbackshown = false
+    let feedback = UILabel(frame: CGRect(x: 0, y: 0, width: 700, height: 500))
+    
+    //create var to keep track of carbs and noncarbs
+    var num_carbs = 0
+    var num_noncarbs = 0
+    
     //initialize player avatar
     let player = SKSpriteNode(imageNamed: "ram")
     var playerTouched:Bool = false
@@ -26,14 +36,14 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     let streakStar = SKSpriteNode(imageNamed: "star")
     let streakValue = SKLabelNode(fontNamed: "Marker Felt")
     let count_label = SKLabelNode(fontNamed: "Marker Felt")
-
+    
     
     // make sound effects here, then call playSound(sound: soundname) to play them
     var good_carb = SKAction.playSoundFileNamed("GameSounds/good_carb.wav", waitForCompletion: false)
     var bad_carb = SKAction.playSoundFileNamed("GameSounds/bad_carb.wav", waitForCompletion: false)
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
-
+    
     var goal = 0
     var streak = 0
     var itemsCollected = 0
@@ -47,7 +57,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     
     
     override func didMove(to view: SKView) {
-    
+
         background_lunch.size = self.frame.size
         background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
         background_lunch.zPosition = -1
@@ -73,7 +83,6 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         back.setScale(0.25)
         addChild(back)
         var seconds = CGFloat(1.0)
-        
 
         // change non-carb goal depending on round selected
         if(RoundSelect.round==1) {
@@ -88,7 +97,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
             goal = 20
             seconds = CGFloat(0.5)
         }
-
+        
         run(SKAction.repeatForever(
             SKAction.sequence([
                 SKAction.run(addFood),
@@ -138,6 +147,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         
         streakValue.text = "\(streak)"
         streakValue.fontSize = 30
+        streakValue.fontColor = SKColor.blue
         streakValue.position = CGPoint(x: size.width * 0.77, y: size.height * 0.95)
         streakValue.zPosition = 1.0
         addChild(streakValue)
@@ -158,6 +168,10 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+//        let touch = touches.first
+//        let touchLocation = touch!.location(in: self)
+
+        
         if (!gameOver){
             playerTouched = true
             //play game when player puts down finger
@@ -168,11 +182,14 @@ class Level1: SKScene, SKPhysicsContactDelegate{
                 playerLocation = touch.location(in: self)
             }
             
-        }else{
+        }else {
+            
             let reveal = SKTransition.doorsCloseHorizontal(withDuration: 5)
             
             let scene = RoundSelect(size: self.size)
             self.view?.presentScene(scene, transition: reveal)
+            
+            feedback.removeFromSuperview()
         }
         
         
@@ -232,7 +249,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         
         
         
-        let randd = Int(arc4random_uniform(43))
+        let randd = Int(arc4random_uniform(42))
         // random number casted as int to pick food to show
         let food = Foods.collection[randd].node.copy() as! SKSpriteNode
         
@@ -287,6 +304,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
                     playSound(sound: good_carb)
                     streak += 1
                     itemsCollected += 1
+                    num_noncarbs += 1
                     count_label.text = "You have \(itemsCollected) out of \(goal) non-carbs!"
                     streakValue.text = "\(streak)"
                     //emphasize star on streak increase
@@ -300,6 +318,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
                 }else{
                     playSound(sound: bad_carb)
                     let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
+                    retryScreen.name = "asset"
                     retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                     retryScreen.zPosition = 1.0
                     addChild(retryScreen)
@@ -308,6 +327,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
                     )
                     streak = 0
                     streakValue.text = "\(streak)"
+                    num_carbs += 1
                     score -= 20
                     scoreBar.text = "SCORE: \(score)"
                 }
@@ -337,7 +357,56 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         foodMeter.size = CGSize(width: 0, height: foodMeter.size.height)
     }
     
+//    func handleTap(gestureRecognizer: UIGestureRecognizer){
+//        feedback.removeFromSuperview()
+//    }
+    
+    func removeAssets(){
+        //remove assets
+        for child in self.children {
+            if child.name == "asset"{
+                child.removeFromParent()
+            }
+        }
+        for child in self.children {
+            if child.name == "food"{
+                child.removeFromParent()
+            }
+        }
+    }
+    
     func endRound(){
+        
+        removeAssets()
+        
+        //create and show feedback
+        var extraFeedback = ""
+        if(num_noncarbs > num_carbs){
+            extraFeedback = "Good job! (:"
+            
+        }else{
+            extraFeedback = "Try better next round!"
+        }
+        
+        feedback.center = CGPoint(x: size.width * 0.5, y: size.height/2)
+        feedback.backgroundColor = UIColor.init(red: 0.09, green: 0.09, blue: 0.44, alpha: 1.0)
+        feedback.textAlignment = .center
+        feedback.numberOfLines = 5
+        feedback.textColor = .lightText
+        feedback.numberOfLines = 6 // for example
+        feedback.font = feedback.font.withSize(50)
+        feedback.layer.masksToBounds = true
+        feedback.layer.cornerRadius = 50
+        feedbackshown = true
+        feedback.text = "Congrats! You completed \n Level 1 Round \(RoundSelect.round)! \n You collected a total of \n \(num_carbs) carbs and \n \(num_noncarbs) non-carbs. \n \(extraFeedback)"
+        
+        
+        
+        self.view?.addSubview(feedback)
+        self.feedbackshown = true
+        self.view?.bringSubview(toFront: feedback)
+        
+        
         gameOver = true
         view?.scene?.isPaused = true
         player.removeFromParent()
@@ -347,5 +416,4 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     
     
 }
-
 
