@@ -35,7 +35,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     let back = SKSpriteNode(imageNamed: "back_button")
     var seconds = CGFloat(1.0)
     let scoreBar = SKLabelNode(fontNamed: "Marker Felt")
-
+    
     
     var b_empty_plate = SKSpriteNode(imageNamed: "empty_plate")
     var b_full_plate = SKSpriteNode(imageNamed: "full_plate")
@@ -78,15 +78,15 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     var great_carb = SKAction.playSoundFileNamed("GameSounds/great_carb.wav", waitForCompletion: false)
     var level_complete = SKAction.playSoundFileNamed("GameSounds/level_complete.wav", waitForCompletion: false)
     
-
+    
     //food plate screen labels and background
     let collectedItemsLabel = SKSpriteNode(imageNamed: "foods_on_your_plate")
     let collectionBackground = SKSpriteNode(imageNamed: "blue_screen")
-
+    
     //define safe zone
     let safeRange = SKRange(lowerLimit:309)
-
-
+    
+    
     
     override func didMove(to view: SKView) {
         
@@ -150,7 +150,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         back.zPosition = 1.0
         back.setScale(0.25)
         addChild(back)
-    
+        
         
         if(RoundSelect.round==1) {
             seconds = CGFloat(1.0)
@@ -195,11 +195,11 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             SKAction.fadeOut(withDuration: 0.5)
         )
         
-
+        
         //prevent Rameses from moving to the safe zone
         let keepOffBottom = SKConstraint.positionY(safeRange)
         player.constraints = [keepOffBottom]
-
+        
     }
     
     // RECOGNIZING TOUCH GESTURES
@@ -207,7 +207,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
         let touch = touches.first
         let touchLocation = touch!.location(in: self)
-
+        
         
         if (!gameOver && !feedbackshown){
             playerTouched = true
@@ -338,6 +338,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         let actualY = random(min: food.size.height/2 + 230, max: size.height - food.size.height/2)
         
         food.position = CGPoint(x: size.width + food.size.width/2, y: actualY)
+        food.zPosition = 0.5
         food.physicsBody = SKPhysicsBody(circleOfRadius: food.size.width/2)
         food.physicsBody?.affectedByGravity = false
         food.physicsBody?.collisionBitMask = 0
@@ -438,7 +439,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
                     self.feedbackshown = false
-
+                    
                 }
             } else if (l_plate) {
                 view?.scene?.isPaused = true
@@ -584,14 +585,14 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             food_number.fontColor = magentaFont
             alternateNum = 0
         }
-
+        
         
         food_number.position = CGPoint(x: player.position.x, y: player.position.y)
         food_number.zPosition = 1.0
-//        food_number.fontColor = .darkText
-//        if(d_plate) {
-//            food_number.fontColor = .lightText
-//        }
+        //        food_number.fontColor = .darkText
+        //        if(d_plate) {
+        //            food_number.fontColor = .lightText
+        //        }
         addChild(food_number)
         
         let scaleUp = SKAction.scale(to: 2.0, duration: 0.2)
@@ -603,8 +604,8 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     //show collected items on plate click and after each completed plate
     func showCollectedItems(){
         var spacing = 100
-        collectionBackground.zPosition = 2.6
-        collectedItemsLabel.zPosition = 3.0
+        collectionBackground.zPosition = 3.0
+        collectedItemsLabel.zPosition = 3.2
         
         
         //show collected items before moving on to next plate
@@ -623,12 +624,12 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         
         
     }
-
+    
     func removeAssets(){
         //remove retry/success screen
         //remove carbcount numbers
         //remove foods
-        //clear scene for restarting a plate 
+        //clear scene for restarting a plate
         //or clear scene for starting a new plate
         for child in self.children {
             if child.name == "asset"{
