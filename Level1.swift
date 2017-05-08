@@ -8,6 +8,7 @@ enum object:UInt32{
 
 class Level1: SKScene, SKPhysicsContactDelegate{
     var gameOver = false
+    var level1round = 0
     
     //scoring feedback
     //breakdown of the number of carbs and non-carb items collected
@@ -87,14 +88,19 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         // change non-carb goal depending on round selected
         if(RoundSelect.round==1) {
             goal = 5
+            level1round = 1
         } else if(RoundSelect.round==2) {
             goal = 10
+            level1round = 2
         } else if(RoundSelect.round==3) {
             goal = 15
+            level1round = 3
         } else if(RoundSelect.round==4) {
             goal = 20
+            level1round = 4
         } else if(RoundSelect.round==5) {
             goal = 20
+            level1round = 5
             seconds = CGFloat(0.5)
         }
         
@@ -320,7 +326,8 @@ class Level1: SKScene, SKPhysicsContactDelegate{
                     let retryScreen = SKSpriteNode(imageNamed: "retry-icon")
                     retryScreen.name = "asset"
                     retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
-                    retryScreen.zPosition = 1.0
+                    retryScreen.zPosition = 2.0
+                    retryScreen.setScale(0.6)
                     addChild(retryScreen)
                     retryScreen.run(
                         SKAction.fadeOut(withDuration: 0.5)
@@ -398,7 +405,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         feedback.layer.masksToBounds = true
         feedback.layer.cornerRadius = 50
         feedbackshown = true
-        feedback.text = "Congrats! You completed \n Level 1 Round \(RoundSelect.round)! \n You collected a total of \n \(num_carbs) carbs and \n \(num_noncarbs) non-carbs. \n \(extraFeedback)"
+        feedback.text = "Congrats! You completed \n Level 1 Round \(level1round)! \n You collected a total of \n \(num_carbs) carbs and \n \(num_noncarbs) non-carbs. \n \(extraFeedback)"
         
         
         

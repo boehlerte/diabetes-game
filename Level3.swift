@@ -532,6 +532,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                         let retryScreen = SKSpriteNode(imageNamed: "duplicate_item")
                         retryScreen.position = CGPoint(x: player.position.x, y: player.position.y)
                         retryScreen.zPosition = 1.0
+                        retryScreen.setScale(0.5)
                         addChild(retryScreen)
                         retryScreen.run(
                             SKAction.fadeOut(withDuration: 0.5)
@@ -596,9 +597,12 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     
     //show collected items on plate click and after each completed plate
     func showCollectedItems(){
-        var spacing = 100
-        collectionBackground.zPosition = 2.6
-        collectedItemsLabel.zPosition = 3.0
+
+        var xspacing = 100
+        var yspacing = 0
+        collectionBackground.zPosition = 3.0
+        collectedItemsLabel.zPosition = 3.2
+
         
         
         //show collected items before moving on to next plate
@@ -607,14 +611,18 @@ class Level3: SKScene, SKPhysicsContactDelegate{
             print(items.node)
             //show already collected items
             let itemCard = items.node
-            let floatSpacing = (CGFloat)(spacing)
-            itemCard.position = CGPoint(x: floatSpacing, y: frame.midY + 100)
+            let xfloatSpacing = (CGFloat)(xspacing)
+            let yfloatSpacing = (CGFloat)(yspacing)
+            itemCard.position = CGPoint(x: xfloatSpacing, y: (frame.midY + 100) - yfloatSpacing)
             itemCard.zPosition = 4.0
             itemCard.name = "hint"
             addChild(itemCard)
-            spacing += 200
+            xspacing += 200
+            if(xfloatSpacing >= (self.frame.width - 200)){
+                xspacing = 100
+                yspacing += 150
+            }
         }
-        
         
     }
     
