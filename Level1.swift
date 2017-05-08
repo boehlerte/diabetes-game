@@ -57,7 +57,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     
     
     override func didMove(to view: SKView) {
-
+        
         background_lunch.size = self.frame.size
         background_lunch.position = CGPoint(x: size.width/2, y: size.height * 0.55)
         background_lunch.zPosition = -1
@@ -83,7 +83,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         back.setScale(0.25)
         addChild(back)
         var seconds = CGFloat(1.0)
-
+        
         // change non-carb goal depending on round selected
         if(RoundSelect.round==1) {
             goal = 5
@@ -168,9 +168,9 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     // RECOGNIZING TOUCH GESTURES
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-//        let touch = touches.first
-//        let touchLocation = touch!.location(in: self)
-
+        //        let touch = touches.first
+        //        let touchLocation = touch!.location(in: self)
+        
         
         if (!gameOver){
             playerTouched = true
@@ -249,7 +249,7 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         
         
         
-        let randd = Int(arc4random_uniform(42))
+        let randd = Int(arc4random_uniform(44))
         // random number casted as int to pick food to show
         let food = Foods.collection[randd].node.copy() as! SKSpriteNode
         
@@ -357,9 +357,9 @@ class Level1: SKScene, SKPhysicsContactDelegate{
         foodMeter.size = CGSize(width: 0, height: foodMeter.size.height)
     }
     
-//    func handleTap(gestureRecognizer: UIGestureRecognizer){
-//        feedback.removeFromSuperview()
-//    }
+    //    func handleTap(gestureRecognizer: UIGestureRecognizer){
+    //        feedback.removeFromSuperview()
+    //    }
     
     func removeAssets(){
         //remove assets
@@ -416,4 +416,3 @@ class Level1: SKScene, SKPhysicsContactDelegate{
     
     
 }
-

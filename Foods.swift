@@ -115,9 +115,9 @@ class Foods{
         let f22 = Foods(node: steakNode, carb_count: 0, carb: false, b: false, l:true, d:true)
         collection.append(f22)
         
-//        let olive_oilNode = SKSpriteNode(imageNamed: "Foods.sprite/olive_oil.png")
-//        let f29 = Foods(node: olive_oilNode, carb_count: 0, carb: false, b: false, l:true, d:true)
-//        collection.append(f29)
+        //        let olive_oilNode = SKSpriteNode(imageNamed: "Foods.sprite/olive_oil.png")
+        //        let f29 = Foods(node: olive_oilNode, carb_count: 0, carb: false, b: false, l:true, d:true)
+        //        collection.append(f29)
         
         let bagelNode = SKSpriteNode(imageNamed: "Foods.sprite/bagel.png")
         let f23 = Foods(node: bagelNode, carb_count: 48, carb: true, b: true, l:true, d:false)
@@ -128,9 +128,9 @@ class Foods{
         let burritoNode = SKSpriteNode(imageNamed: "Foods.sprite/burrito.png")
         let f25 = Foods(node: burritoNode, carb_count: 71, carb: true, b: false, l:true, d:true)
         collection.append(f25)
-//        let carrot_sticksNode = SKSpriteNode(imageNamed: "Foods.sprite/carrot_sticks.png")
-//        let f33 = Foods(node: carrot_sticksNode, carb_count: 6, carb: true, b: false, l:true, d:true)
-//        collection.append(f33)
+        //        let carrot_sticksNode = SKSpriteNode(imageNamed: "Foods.sprite/carrot_sticks.png")
+        //        let f33 = Foods(node: carrot_sticksNode, carb_count: 6, carb: true, b: false, l:true, d:true)
+        //        collection.append(f33)
         let cerealNode = SKSpriteNode(imageNamed: "Foods.sprite/cereal.png")
         let f26 = Foods(node: cerealNode, carb_count: 25, carb: true, b: true, l:false, d:false)
         collection.append(f26)
@@ -176,15 +176,24 @@ class Foods{
         let spaghettiNode = SKSpriteNode(imageNamed: "Foods.sprite/spaghetti.png")
         let f40 = Foods(node: spaghettiNode, carb_count: 43, carb: true, b: false, l:true, d:true)
         collection.append(f40)
-//        let strawberry_milkNode = SKSpriteNode(imageNamed: "Foods.sprite/strawberry_milk.png")
-//        let f48 = Foods(node: strawberry_milkNode, carb_count: 33, carb: true, b: true, l:false, d:false)
-//        collection.append(f48)
+
         let tacosNode = SKSpriteNode(imageNamed: "Foods.sprite/tacos.png")
         let f41 = Foods(node: tacosNode, carb_count: 14, carb: true, b: false, l:true, d:true)
         collection.append(f41)
         let toastNode = SKSpriteNode(imageNamed: "Foods.sprite/toast.png")
         let f42 = Foods(node: toastNode, carb_count: 13, carb: true, b: true, l:false, d:true)
         collection.append(f42)
+        
+        let chocolatemilkNode = SKSpriteNode(imageNamed: "Foods.sprite/chocolate_milk.png")
+        let f43 = Foods(node: chocolatemilkNode, carb_count: 26, carb: true, b: true, l:true, d:true)
+        collection.append(f43)
+        
+        let waterNode = SKSpriteNode(imageNamed: "Foods.sprite/water.png")
+        let f44 = Foods(node: waterNode, carb_count: 0, carb: false, b: true, l:true, d:true)
+        collection.append(f44)
+                let strawberry_milkNode = SKSpriteNode(imageNamed: "Foods.sprite/strawberry_milk.png")
+                let f45 = Foods(node: strawberry_milkNode, carb_count: 33, carb: true, b: true, l:false, d:false)
+                collection.append(f45)
         
         
         
