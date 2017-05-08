@@ -90,11 +90,6 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     
     override func didMove(to view: SKView) {
         
-        //        feedback.isUserInteractionEnabled = true
-        //        let tap = UITapGestureRecognizer(target: self, action: Selector(("tapFunction:")))
-        //        feedback.addGestureRecognizer(tap)
-        
-        
         background_breakfast.size = self.frame.size
         background_breakfast.position = CGPoint(x: size.width/2, y: size.height * 0.5)
         background_breakfast.zPosition = -1
@@ -323,7 +318,7 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 done = true
                 print("\(interval)")
             } else {
-                let randd = Int(arc4random_uniform(42))
+                let randd = Int(arc4random_uniform(44))
                 // pick food to show
                 if((b_plate && Foods.collection[randd].b) || (l_plate && Foods.collection[randd].l) || (d_plate && Foods.collection[randd].d)) {
                     interval += 1
@@ -338,7 +333,6 @@ class Level3: SKScene, SKPhysicsContactDelegate{
         let actualY = random(min: food.size.height/2 + 230, max: size.height - food.size.height/2)
         
         food.position = CGPoint(x: size.width + food.size.width/2, y: actualY)
-        food.zPosition = 0.5
         food.physicsBody = SKPhysicsBody(circleOfRadius: food.size.width/2)
         food.physicsBody?.affectedByGravity = false
         food.physicsBody?.collisionBitMask = 0
@@ -439,7 +433,6 @@ class Level3: SKScene, SKPhysicsContactDelegate{
                 DispatchQueue.main.asyncAfter(deadline: when) {
                     feedback.removeFromSuperview()
                     self.feedbackshown = false
-                    
                 }
             } else if (l_plate) {
                 view?.scene?.isPaused = true
@@ -604,10 +597,12 @@ class Level3: SKScene, SKPhysicsContactDelegate{
     
     //show collected items on plate click and after each completed plate
     func showCollectedItems(){
+
         var xspacing = 100
         var yspacing = 0
         collectionBackground.zPosition = 3.0
         collectedItemsLabel.zPosition = 3.2
+
         
         
         //show collected items before moving on to next plate
